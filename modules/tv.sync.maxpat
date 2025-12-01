@@ -9,7 +9,7 @@
 			"modernui" : 1
 		},
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 600.0, 450.0 ],
+		"rect" : [ 100.0, 100.0, 700.0, 550.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -46,18 +46,18 @@
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 380.0, 30.0, 30.0 ]
+					"patching_rect" : [ 50.0, 480.0, 30.0, 30.0 ]
 				}
 			},
 			{
 				"box" : {
-					"comment" : "Write Index (0 to Dim-1)",
+					"comment" : "Write Index X (0 to Dim-1)",
 					"id" : "obj-out2",
 					"index" : 2,
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 150.0, 380.0, 30.0, 30.0 ]
+					"patching_rect" : [ 150.0, 480.0, 30.0, 30.0 ]
 				}
 			},
 			{
@@ -68,7 +68,7 @@
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 250.0, 380.0, 30.0, 30.0 ]
+					"patching_rect" : [ 250.0, 480.0, 30.0, 30.0 ]
 				}
 			},
 			{
@@ -77,8 +77,18 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 350.0, 50.0, 200.0, 20.0 ],
+					"patching_rect" : [ 400.0, 50.0, 200.0, 20.0 ],
 					"text" : "tv.sync - Master Clock Module"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-comment-y",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 400.0, 70.0, 250.0, 20.0 ],
+					"text" : "Y-row counter increments on phasor wrap"
 				}
 			},
 			{
@@ -132,7 +142,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 150.0, 200.0, 100.0, 22.0 ],
+					"patching_rect" : [ 150.0, 200.0, 80.0, 22.0 ],
 					"text" : "r ---tv_dim"
 				}
 			},
@@ -177,7 +187,116 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 150.0, 320.0, 45.0, 22.0 ],
-					"text" : "floor~"
+					"text" : "trunc~"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-delta",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 350.0, 200.0, 45.0, 22.0 ],
+					"text" : "delta~"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-lessthan",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 350.0, 230.0, 45.0, 22.0 ],
+					"text" : "<~ 0."
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-edge",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "bang", "bang" ],
+					"patching_rect" : [ 350.0, 260.0, 45.0, 22.0 ],
+					"text" : "edge~"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-counter",
+					"maxclass" : "newobj",
+					"numinlets" : 5,
+					"numoutlets" : 4,
+					"outlettype" : [ "int", "", "", "int" ],
+					"patching_rect" : [ 350.0, 330.0, 100.0, 22.0 ],
+					"text" : "counter 0 0 255"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-send-y",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 350.0, 400.0, 100.0, 22.0 ],
+					"text" : "s ---tv_write_y"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-dim-y",
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 420.0, 290.0, 80.0, 22.0 ],
+					"text" : "r ---tv_dim"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-minus1-y",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "int" ],
+					"patching_rect" : [ 420.0, 310.0, 32.0, 22.0 ],
+					"text" : "- 1"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-setmax",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 420.0, 340.0, 65.0, 22.0 ],
+					"text" : "pack 0 255"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-setmax-msg",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "" ],
+					"patching_rect" : [ 420.0, 370.0, 85.0, 22.0 ],
+					"text" : "route int"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-prepend-max",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 500.0, 330.0, 57.0, 22.0 ],
+					"text" : "prepend max"
 				}
 			}
 		],
@@ -226,6 +345,12 @@
 			},
 			{
 				"patchline" : {
+					"destination" : [ "obj-delta", 0 ],
+					"source" : [ "obj-phasor", 0 ]
+				}
+			},
+			{
+				"patchline" : {
 					"destination" : [ "obj-minus1", 0 ],
 					"source" : [ "obj-dim", 0 ]
 				}
@@ -252,6 +377,48 @@
 				"patchline" : {
 					"destination" : [ "obj-out2", 0 ],
 					"source" : [ "obj-floor", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-lessthan", 0 ],
+					"source" : [ "obj-delta", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-edge", 0 ],
+					"source" : [ "obj-lessthan", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-counter", 0 ],
+					"source" : [ "obj-edge", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-send-y", 0 ],
+					"source" : [ "obj-counter", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-minus1-y", 0 ],
+					"source" : [ "obj-dim-y", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-prepend-max", 0 ],
+					"source" : [ "obj-minus1-y", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-counter", 4 ],
+					"source" : [ "obj-prepend-max", 0 ]
 				}
 			}
 		]
