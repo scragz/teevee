@@ -58,7 +58,7 @@
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 720.0, 30.0, 30.0 ]
+					"patching_rect" : [ 50.0, 680.0, 30.0, 30.0 ]
 				}
 			},
 			{
@@ -68,7 +68,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 550.0, 30.0, 400.0, 20.0 ],
-					"text" : "tv.fx - GPU Effects via jit.world + jit.gl.pix (tv.core.genjit)"
+					"text" : "tv.fx - GPU Effects via jit.gl.pix (tv.core.genjit)"
 				}
 			},
 			{
@@ -79,28 +79,17 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 550.0, 55.0, 450.0, 75.0 ],
-					"text" : "Signal Flow:\n1. Read tv_ram (1D) → reshape to 2D\n2. Upload to GPU texture → jit.gl.pix processing\n3. Capture processed texture → readback to CPU matrix\n4. Reshape to 1D → write back to tv_ram for feedback"
+					"text" : "Signal Flow:\n1. Read tv_ram (1D) → reshape to 2D → upload to GPU\n2. jit.gl.pix processes with tv.core.genjit (uses History for feedback)\n3. Readback → reshape to 1D → write back to tv_ram\nNo explicit texture naming needed - shader handles feedback internally"
 				}
 			},
 			{
 				"box" : {
-					"id" : "obj-world",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 3,
-					"outlettype" : [ "jit_matrix", "bang", "" ],
-					"patching_rect" : [ 50.0, 80.0, 340.0, 22.0 ],
-					"text" : "jit.world tv_world @visible 0 @enable 1 @output_matrix 1 @dim 256 256"
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-ram-ref",
+					"id" : "obj-ram-read",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 50.0, 140.0, 200.0, 22.0 ],
+					"patching_rect" : [ 50.0, 100.0, 200.0, 22.0 ],
 					"text" : "jit.matrix tv_ram 4 float32 65536"
 				}
 			},
@@ -111,124 +100,29 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 50.0, 180.0, 200.0, 22.0 ],
+					"patching_rect" : [ 50.0, 150.0, 200.0, 22.0 ],
 					"text" : "jit.matrix 4 float32 256 256 @adapt 0"
 				}
 			},
 			{
 				"box" : {
-					"id" : "obj-comment-upload",
+					"id" : "obj-comment-pix",
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 270.0, 220.0, 200.0, 20.0 ],
-					"text" : "Upload CPU matrix → GPU texture"
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-texture-in",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "jit_gl_texture", "" ],
-					"patching_rect" : [ 50.0, 240.0, 320.0, 22.0 ],
-					"text" : "jit.gl.texture tv_world @name tv_tex_in @type float32 @dim 256 256"
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-comment-feedback",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 270.0, 280.0, 250.0, 20.0 ],
-					"text" : "Feedback texture (stores previous frame)"
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-texture-feedback",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "jit_gl_texture", "" ],
-					"patching_rect" : [ 50.0, 300.0, 350.0, 22.0 ],
-					"text" : "jit.gl.texture tv_world @name tv_tex_fb @type float32 @dim 256 256"
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-comment-process",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 270.0, 360.0, 300.0, 20.0 ],
-					"text" : "GPU processing via jit.gl.pix shader"
+					"patching_rect" : [ 270.0, 200.0, 300.0, 20.0 ],
+					"text" : "GPU shader - History operator provides feedback"
 				}
 			},
 			{
 				"box" : {
 					"id" : "obj-pix",
 					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 2,
-					"outlettype" : [ "jit_gl_texture", "" ],
-					"patching_rect" : [ 50.0, 380.0, 400.0, 22.0 ],
-					"text" : "jit.gl.pix tv_world @file tv.core.genjit @type float32 @dim 256 256"
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-comment-capture",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 270.0, 440.0, 250.0, 20.0 ],
-					"text" : "Route output: feedback + capture"
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-route-output",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 50.0, 460.0, 32.0, 22.0 ],
-					"text" : "t l l"
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-copy-to-feedback",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "jit_gl_texture", "" ],
-					"patching_rect" : [ 150.0, 500.0, 350.0, 22.0 ],
-					"text" : "jit.gl.texture tv_world @name tv_tex_fb @type float32 @dim 256 256"
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-comment-readback",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 270.0, 540.0, 250.0, 20.0 ],
-					"text" : "Readback GPU → CPU (every frame)"
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-readback",
-					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 50.0, 560.0, 200.0, 22.0 ],
-					"text" : "jit.matrix 4 float32 256 256 @adapt 0"
+					"patching_rect" : [ 50.0, 220.0, 300.0, 22.0 ],
+					"text" : "jit.gl.pix @file tv.core.genjit @type float32 @dim 256 256"
 				}
 			},
 			{
@@ -238,7 +132,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 50.0, 600.0, 32.0, 22.0 ],
+					"patching_rect" : [ 50.0, 280.0, 32.0, 22.0 ],
 					"text" : "t l l"
 				}
 			},
@@ -248,8 +142,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 270.0, 640.0, 250.0, 20.0 ],
-					"text" : "Write back to 1D tv_ram for jit.peek~ audio"
+					"patching_rect" : [ 270.0, 340.0, 250.0, 20.0 ],
+					"text" : "Write processed data back to 1D tv_ram"
 				}
 			},
 			{
@@ -259,7 +153,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 150.0, 640.0, 200.0, 22.0 ],
+					"patching_rect" : [ 150.0, 360.0, 200.0, 22.0 ],
 					"text" : "jit.matrix 4 float32 65536 @adapt 0"
 				}
 			},
@@ -270,7 +164,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 150.0, 680.0, 200.0, 22.0 ],
+					"patching_rect" : [ 150.0, 400.0, 200.0, 22.0 ],
 					"text" : "jit.matrix tv_ram 4 float32 65536"
 				}
 			},
@@ -280,8 +174,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 550.0, 150.0, 200.0, 20.0 ],
-					"text" : "Parameter routing to jit.gl.pix"
+					"patching_rect" : [ 550.0, 150.0, 300.0, 20.0 ],
+					"text" : "Parameter routing to jit.gl.pix (use 'param name val')"
 				}
 			},
 			{
@@ -302,8 +196,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 550.0, 210.0, 130.0, 22.0 ],
-					"text" : "prepend scroll_speed"
+					"patching_rect" : [ 550.0, 210.0, 155.0, 22.0 ],
+					"text" : "prepend param scroll_speed"
 				}
 			},
 			{
@@ -313,7 +207,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 700.0, 180.0, 110.0, 22.0 ],
+					"patching_rect" : [ 720.0, 180.0, 110.0, 22.0 ],
 					"text" : "r ---tv_param_zoom"
 				}
 			},
@@ -324,7 +218,7 @@
 					"numinlets" : 6,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 700.0, 210.0, 100.0, 22.0 ],
+					"patching_rect" : [ 720.0, 210.0, 100.0, 22.0 ],
 					"text" : "scale 0. 1. 0.25 4."
 				}
 			},
@@ -335,8 +229,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 700.0, 240.0, 90.0, 22.0 ],
-					"text" : "prepend zoom"
+					"patching_rect" : [ 720.0, 240.0, 115.0, 22.0 ],
+					"text" : "prepend param zoom"
 				}
 			},
 			{
@@ -346,7 +240,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 850.0, 180.0, 120.0, 22.0 ],
+					"patching_rect" : [ 880.0, 180.0, 120.0, 22.0 ],
 					"text" : "r ---tv_param_rotation"
 				}
 			},
@@ -357,7 +251,7 @@
 					"numinlets" : 6,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 850.0, 210.0, 145.0, 22.0 ],
+					"patching_rect" : [ 880.0, 210.0, 145.0, 22.0 ],
 					"text" : "scale 0. 1. -3.14159 3.14159"
 				}
 			},
@@ -368,8 +262,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 850.0, 240.0, 100.0, 22.0 ],
-					"text" : "prepend rotation"
+					"patching_rect" : [ 880.0, 240.0, 125.0, 22.0 ],
+					"text" : "prepend param rotation"
 				}
 			},
 			{
@@ -390,8 +284,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 550.0, 310.0, 95.0, 22.0 ],
-					"text" : "prepend smear"
+					"patching_rect" : [ 550.0, 310.0, 120.0, 22.0 ],
+					"text" : "prepend param smear"
 				}
 			},
 			{
@@ -401,7 +295,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 700.0, 280.0, 105.0, 22.0 ],
+					"patching_rect" : [ 720.0, 280.0, 105.0, 22.0 ],
 					"text" : "r ---tv_param_edge"
 				}
 			},
@@ -412,8 +306,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 700.0, 310.0, 115.0, 22.0 ],
-					"text" : "prepend edge_amount"
+					"patching_rect" : [ 720.0, 310.0, 140.0, 22.0 ],
+					"text" : "prepend param edge_amount"
 				}
 			},
 			{
@@ -445,8 +339,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 550.0, 420.0, 100.0, 22.0 ],
-					"text" : "prepend warp_x"
+					"patching_rect" : [ 550.0, 420.0, 125.0, 22.0 ],
+					"text" : "prepend param warp_x"
 				}
 			},
 			{
@@ -456,7 +350,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 700.0, 360.0, 115.0, 22.0 ],
+					"patching_rect" : [ 720.0, 360.0, 115.0, 22.0 ],
 					"text" : "r ---tv_param_warp_y"
 				}
 			},
@@ -467,7 +361,7 @@
 					"numinlets" : 6,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 700.0, 390.0, 100.0, 22.0 ],
+					"patching_rect" : [ 720.0, 390.0, 100.0, 22.0 ],
 					"text" : "scale 0. 1. -1. 1."
 				}
 			},
@@ -478,76 +372,34 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 700.0, 420.0, 100.0, 22.0 ],
-					"text" : "prepend warp_y"
+					"patching_rect" : [ 720.0, 420.0, 125.0, 22.0 ],
+					"text" : "prepend param warp_y"
 				}
 			}
 		],
 		"lines" : [
 			{
 				"patchline" : {
-					"destination" : [ "obj-world", 0 ],
+					"destination" : [ "obj-ram-read", 0 ],
 					"source" : [ "obj-inlet", 0 ]
 				}
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-ram-ref", 0 ],
-					"source" : [ "obj-world", 1 ]
-				}
-			},
-			{
-				"patchline" : {
 					"destination" : [ "obj-reshape-to-2d", 0 ],
-					"source" : [ "obj-ram-ref", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-texture-in", 0 ],
-					"source" : [ "obj-reshape-to-2d", 0 ]
+					"source" : [ "obj-ram-read", 0 ]
 				}
 			},
 			{
 				"patchline" : {
 					"destination" : [ "obj-pix", 0 ],
-					"source" : [ "obj-texture-in", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-pix", 1 ],
-					"source" : [ "obj-texture-feedback", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-route-output", 0 ],
-					"source" : [ "obj-pix", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-readback", 0 ],
-					"source" : [ "obj-route-output", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-copy-to-feedback", 0 ],
-					"source" : [ "obj-route-output", 1 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-texture-feedback", 0 ],
-					"source" : [ "obj-copy-to-feedback", 0 ]
+					"source" : [ "obj-reshape-to-2d", 0 ]
 				}
 			},
 			{
 				"patchline" : {
 					"destination" : [ "obj-output-branch", 0 ],
-					"source" : [ "obj-readback", 0 ]
+					"source" : [ "obj-pix", 0 ]
 				}
 			},
 			{
