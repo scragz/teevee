@@ -40,6 +40,17 @@
 		"boxes" : [
 			{
 				"box" : {
+					"id" : "obj-matrix-ref",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "jit_matrix", "" ],
+					"patching_rect" : [ 400.0, 30.0, 200.0, 22.0 ],
+					"text" : "jit.matrix tv_ram 4 float32 65536"
+				}
+			},
+			{
+				"box" : {
 					"comment" : "Audio Out L",
 					"id" : "obj-out-l",
 					"index" : 1,
@@ -82,17 +93,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 150.0, 30.0, 30.0, 30.0 ]
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-matrix-ref",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 400.0, 30.0, 200.0, 22.0 ],
-					"text" : "jit.matrix tv_ram 4 float32 65536"
 				}
 			},
 			{
