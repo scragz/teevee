@@ -9,7 +9,7 @@
 			"modernui" : 1
 		},
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 400.0, 350.0 ],
+		"rect" : [ 100.0, 100.0, 400.0, 400.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -31,16 +31,16 @@
 		"enablehscroll" : 1,
 		"enablevscroll" : 1,
 		"devicewidth" : 0.0,
-		"description" : "tv.viz - Simple matrix display",
-		"digest" : "Displays the processed jit_matrix output",
-		"tags" : "teevee, viz, visualization, display, matrix",
+		"description" : "tv.viz - GPU-processed matrix display",
+		"digest" : "Displays the GPU-processed jit_matrix output (256x256 float32)",
+		"tags" : "teevee, viz, visualization, display, matrix, gpu",
 		"style" : "",
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [
 			{
 				"box" : {
-					"comment" : "jit_matrix input from tv.fx",
+					"comment" : "jit_matrix input from tv.fx (2D 256x256 float32)",
 					"id" : "obj-inlet",
 					"index" : 1,
 					"maxclass" : "inlet",
@@ -56,8 +56,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 100.0, 35.0, 250.0, 20.0 ],
-					"text" : "tv.viz - Simple jit_matrix display (256x256)"
+					"patching_rect" : [ 100.0, 35.0, 280.0, 20.0 ],
+					"text" : "tv.viz - GPU-processed matrix display (256x256)"
 				}
 			},
 			{

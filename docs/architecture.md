@@ -124,39 +124,68 @@ The correct method is to move immediately to **OpenGL (GPU)**.
 
 ---
 
-## V. The Transformation Engine (Optimized FX Chain)
-This engine replaces heavy CPU objects (like `jit.sort`) with lightweight, high-impact topology modifiers inside `jit.gl.pix`.
+## V. The Transformation Engine (GPU FX Chain)
+This engine uses GPU-based processing via `jit.gl.pix` with the `tv.core.genjit` shader for all effects in a single pass.
 
-**Current Implementation (v5):** Uses CPU-based `jit.rota` → `jit.slide` → `jit.sobel` chain with `jit.xfade` for edge mixing. GPU migration to `jit.gl.pix` is planned for performance optimization.
+**Current Implementation (v5):** GPU-based processing via `jit.world` + `jit.gl.pix @file tv.core.genjit`.
 
-**1D→2D Reshape:** Since the shared matrix is 1D for M4L compatibility, the FX module reshapes to 2D for processing:
+### GPU Signal Flow
 ```
-jit.matrix tv_ram (1D) → jit.matrix (anonymous 2D 256x256) → effects → jit.matrix (anonymous 1D) → jit.matrix tv_ram (1D)
+jit.matrix tv_ram (1D 65536)
+    ↓
+jit.matrix (reshape to 2D 256×256)
+    ↓
+jit.gl.texture tv_tex_in (upload to GPU)
+    ↓
+jit.gl.pix @file tv.core.genjit (GPU processing)
+    ↓ ← jit.gl.texture tv_tex_fb (feedback from previous frame)
+    ↓
+jit.gl.texture tv_tex_fb (copy output for next frame feedback)
+    ↓
+jit.matrix (readback to CPU, 2D 256×256)
+    ↓
+jit.matrix (reshape to 1D 65536)
+    ↓
+jit.matrix tv_ram (write back for jit.peek~ audio output)
 ```
 
-### 1. The Warper (Geometric)
-* **Object:** `jit.rota` with `@boundmode 1 @interp 1`
-* **Action:** Rotates and Zooms the texture (Coordinate transformation).
-* **Parameters:** `zoom_x`, `zoom_y`, `theta`, `offset_y` (scroll), `anchor_x`, `anchor_y`
-* **Sonic Result:**
-    * **Zoom Y:** Pitch Shifting (resampling the delay line).
-    * **Rotation:** Ring Modulation (forcing Mid data into Side plane).
+### OpenGL Context Setup
+* **Context:** `jit.world tv_world @visible 0 @enable 1 @output_matrix 1 @dim 256 256`
+* **Input Texture:** `jit.gl.texture tv_world @name tv_tex_in @type float32 @dim 256 256`
+* **Feedback Texture:** `jit.gl.texture tv_world @name tv_tex_fb @type float32 @dim 256 256`
+* **Processor:** `jit.gl.pix tv_world @file tv.core.genjit @type float32 @dim 256 256`
 
-### 2. The Smear (Temporal)
-* **Object:** `jit.slide` with `@slide_up` and `@slide_down`
-* **Action:** Temporal interpolation (Motion Blur) via exponential smoothing.
-* **Sonic Result:** "Spectral Freezing." Transients lose their attack. The audio decays into a wash of reverb-like texture (Datamosh aesthetic).
+### GPU Shader: tv.core.genjit
+All effects are combined in a single `jit.gl.pix` shader for optimal performance:
 
-### 3. The Transient Excavator (Edge Detection)
-* **Object:** `jit.sobel` (Simple Matrix Math).
-* **Action:** Calculates difference between adjacent pixels. Sets smooth areas to black (0), edges to white (1).
-* **Mixing:** `jit.xfade` blends between original and edge-detected signal.
-* **Sonic Result:** **Rhythmic Extraction.** Strips body/bass (smooth gradients) and leaves only the click/attack.
-* **Optimization:** $O(N)$ complexity vs `jit.sort`'s $O(N \log N)$.
+#### Parameters
+| Param | Range | Default | Effect |
+|-------|-------|---------|--------|
+| `scroll_speed` | 0-1 | 0.01 | UV Y offset (waterfall scroll) |
+| `zoom` | 0.25-4 | 1 | UV scaling (pitch shift) |
+| `rotation` | -π to π | 0 | 2D rotation (ring mod) |
+| `smear` | 0-1 | 0 | Temporal blur via History |
+| `edge_amount` | 0-1 | 0 | Sobel edge detection mix |
+| `warp_x` | -1 to 1 | 0 | Barrel/pincushion X |
+| `warp_y` | -1 to 1 | 0 | Barrel/pincushion Y |
 
-### 4. The Living Texture (Reaction-Diffusion)
-* **Action:** A cellular automata rule where pixels "grow" into neighbors based on brightness.
-* **Sonic Result:** **Generative Noise.** A single snare hit "blooms" into a self-propagating noise cluster.
+#### Shader Processing Order
+1. **Rotation:** 2D rotation matrix applied to centered UVs
+2. **Zoom:** UV scaling from center
+3. **Warp:** Barrel/pincushion distortion based on distance from center
+4. **Scroll:** UV Y offset with wrap for continuous waterfall
+5. **Sample:** Read from feedback texture at transformed coordinates
+6. **Edge Detection:** Sobel-style edge detection via neighbor sampling
+7. **Smear:** Temporal interpolation with previous frame via `History`
+8. **Output:** Final processed pixel
+
+### Sonic Results
+* **Scroll:** Creates the continuous history/delay buffer
+* **Zoom:** Pitch shifting (resampling the delay line)
+* **Rotation:** Ring modulation (forces Mid data into Side plane)
+* **Smear:** "Spectral Freezing" - transients lose attack, decays into reverb wash
+* **Edge:** Rhythmic extraction - strips body/bass, leaves click/attack
+* **Warp:** Barrel/pincushion creates frequency-dependent time smearing
 
 ---
 
@@ -206,6 +235,9 @@ To avoid CPU spikes and latency:
 | `jit.slide` | ✅ | Temporal smoothing |
 | `jit.sobel` | ✅ | Edge detection |
 | `jit.xfade` | ✅ | Matrix crossfade |
+| `jit.world` | ✅ | OpenGL context for GPU processing |
+| `jit.gl.texture` | ✅ | GPU texture for upload/readback |
+| `jit.gl.pix` | ✅ | GPU shader processing |
 | `trunc~` | ✅ | Use instead of floor~ |
 | `floor~` | ❌ | Does not exist in Max 8.6 |
 | `wrap` | ❌ | Use `expr fmod()` instead |
@@ -239,19 +271,17 @@ teevee-v5.amxd
 - **Stereo audio passthrough** via jit.poke~/jit.peek~ pipeline
 - **MS encoding/decoding** - Mid/Side encoding in tv.ingest, proper L/R reconstruction in tv.egress
 - **1D matrix approach** with explicit dim_inputcount arguments eliminates load-order issues
+- **GPU processing pipeline** via jit.world + jit.gl.pix with tv.core.genjit shader
 
-### Currently Non-Functional
-- Visual feedback loop not yet producing visible output in jit.pwindow
-- GPU migration (`jit.gl.pix`) not yet implemented
-
-### Implemented but Untested
-- jit.rota/jit.slide/jit.sobel effect chain
-- live.dial parameter controls
-- Y-axis scrubbing for delay/echo effects
+### Implemented (Needs Testing)
+- **GPU effects chain** - scroll, zoom, rotation, smear, edge, warp all in single shader
+- **GPU↔CPU readback** - every frame readback for audio via jit.peek~
+- **Feedback texture loop** - GPU-side temporal feedback
+- **live.dial parameter controls** - mapped to shader params
+- **Y-axis scrubbing** for delay/echo effects
 
 ### Future Work
-- GPU-based effects via `jit.gl.pix` for performance
-- Reaction-Diffusion cellular automata effect
-- Datamosh freeze functionality
-- Warp X/Y distortion effects
-- Visual feedback loop debugging
+- Reaction-Diffusion cellular automata effect (add to shader)
+- Datamosh freeze functionality (stop scroll + ingest)
+- Performance profiling and optimization
+- Throttle readback if CPU bottleneck detected
