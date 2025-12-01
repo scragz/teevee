@@ -19,23 +19,36 @@ Teevee is a **Feedback Ring Buffer** acting as a real-time "Slit-Scan" audio pro
 
 ### Named Matrix & jit.poke~/jit.peek~ Gotchas
 
-**CRITICAL:** `jit.poke~` and `jit.peek~` determine their inlet count at instantiation time based on the dimensionality of the referenced matrix. If the named matrix doesn't exist when the object loads, it defaults to 1D (2 inlets for poke, 1 for peek).
+**CRITICAL:** `jit.poke~` and `jit.peek~` determine their inlet count at instantiation time based on the dimensionality of the referenced matrix. If the named matrix doesn't exist when the object loads, it defaults to 2D (3 inlets for poke, 2 for peek), causing "patchcord inlet out of range" errors.
 
-**Problem:** In M4L and modular patchers, subpatchers may load before the parent's matrix is created, causing "patchcord inlet out of range" errors.
+**Problem:** In M4L and modular patchers, subpatchers may load before the parent's matrix is created.
 
-**Solution - Use 1D Matrix:**
+**Solution - Explicit Dimension Count Argument:**
+The `jit.poke~` and `jit.peek~` objects accept arguments in this order: `[matrix_name] [dim_inputcount] [plane]`
+
+```
+jit.poke~ tv_ram 1 0    # matrix_name=tv_ram, 1 dimension, plane 0
+jit.poke~ tv_ram 1 1    # matrix_name=tv_ram, 1 dimension, plane 1
+jit.peek~ tv_ram 1 0    # matrix_name=tv_ram, 1 dimension, plane 0
+```
+
+By specifying `dim_inputcount = 1`, the object will always have the correct number of inlets:
+- `jit.poke~` with dim=1: 2 inlets (value + 1D index)
+- `jit.peek~` with dim=1: 1 inlet (1D index)
+
+**Matrix Setup:**
 - Use `jit.matrix name 4 float32 65536` (1D with 65536 cells = 256×256)
 - Compute linear index: `index = y * 256 + x`
-- This guarantees consistent inlet counts regardless of load order
 - For visual effects that need 2D, reshape on read/write: pipe through an anonymous `jit.matrix 4 float32 256 256`
 
 **Matrix Naming:**
 - Use simple names like `tv_ram` without the `---` M4L scoping prefix for matrices shared across subpatchers
 - The `---` prefix can cause issues with named matrix references in nested patchers
 
-**Load Order:**
+**Load Order (Belt & Suspenders):**
 - Place the `jit.matrix` declaration FIRST in the boxes array of your main patcher JSON
 - Include a reference `jit.matrix` at the top of each subpatcher that uses jit.poke~/jit.peek~
+- Always specify the `dim_inputcount` argument explicitly
 
 ---
 
@@ -50,10 +63,14 @@ We use a `jit.matrix` with **65536 cells** (logical 256×256 stored as 1D for M4
 ### The MS-Flux Data Structure
 | Plane | Component | Source Logic | Manipulation Result |
 | :--- | :--- | :--- | :--- |
-| **Alpha** | **Dynamics** | RMS Envelope | **Gating.** Thresholds the signal visibility. |
-| **Red** | **Structure** | Mid Channel (L+R) | **Pitch/Time.** Warping Red bends the fundamental waveform. |
-| **Green** | **Flux** | Spectral Delta (Hi-Pass) | **Timbre.** Smearing Green creates "MP3" spectral blur. |
-| **Blue** | **Space** | Side Channel (L-R) | **Width.** Warping Blue expands/collapses stereo field. |
+| **0 (Alpha)** | **Dynamics** | RMS Envelope (`slide(abs(Mid))`) | **Gating.** Thresholds the signal visibility. |
+| **1 (Red)** | **Structure** | Mid Channel `(L+R) * 0.5` | **Pitch/Time.** Warping Red bends the fundamental waveform. |
+| **2 (Green)** | **Flux** | Spectral Delta (`abs(Mid - prev_mid)`) | **Timbre.** Smearing Green creates "MP3" spectral blur. |
+| **3 (Blue)** | **Space** | Side Channel `(L-R) * 0.5` | **Width.** Warping Blue expands/collapses stereo field. |
+
+**Decoding:** To reconstruct stereo from Mid/Side:
+- `L = Mid + Side` (plane 1 + plane 3)
+- `R = Mid - Side` (plane 1 - plane 3)
 
 * **Data Type:** Must use `float32`. **Do not use `char`.** `Char` (0-255) has insufficient dynamic range for audio and will sound like an 8-bit noise floor.
 
@@ -69,10 +86,10 @@ We use a `jit.matrix` with **65536 cells** (logical 256×256 stored as 1D for M4
 5.  **Multi-plane:** Use separate `jit.poke~` for each plane (Alpha=Dynamics, Red=Mid, Green=Flux, Blue=Side).
 
 ```
-plugin~ → gen~ (encode) → jit.poke~ matrix 0 (plane 0)
-                        → jit.poke~ matrix 1 (plane 1)
-                        → jit.poke~ matrix 2 (plane 2)
-                        → jit.poke~ matrix 3 (plane 3)
+plugin~ → gen~ (encode) → jit.poke~ tv_ram 1 0 (plane 0)
+                        → jit.poke~ tv_ram 1 1 (plane 1)
+                        → jit.poke~ tv_ram 1 2 (plane 2)
+                        → jit.poke~ tv_ram 1 3 (plane 3)
                         ↑
               phasor~ → scale~ (0-255) = X
                      → edge~ → counter (0-255) = Y
@@ -180,8 +197,8 @@ To avoid CPU spikes and latency:
 | `inlet` / `outlet` | ❌ | No audio in M4L effects |
 | `gen~` | ✅ | Full DSP functionality. Declarations must come first in codebox. |
 | `jit.matrix` | ✅ | Named matrices work. Use 1D for consistent jit.poke~/jit.peek~ inlet counts. |
-| `jit.poke~` | ⚠️ | Works but inlet count depends on matrix dimensionality at load time. Use 1D matrix. |
-| `jit.peek~` | ⚠️ | Works but inlet count depends on matrix dimensionality at load time. Use 1D matrix. |
+| `jit.poke~` | ✅ | Use `jit.poke~ name dim_count plane` syntax (e.g., `jit.poke~ tv_ram 1 0`) |
+| `jit.peek~` | ✅ | Use `jit.peek~ name dim_count plane` syntax (e.g., `jit.peek~ tv_ram 1 0`) |
 | `jit.catch~` | ❌ | No audio output in M4L |
 | `jit.release~` | ❌ | No audio output in M4L |
 | `jit.pwindow` | ✅ | Matrix visualization |
@@ -218,19 +235,23 @@ teevee-v5.amxd
 
 ## X. Known Issues & Status
 
+### ✅ Working
+- **Stereo audio passthrough** via jit.poke~/jit.peek~ pipeline
+- **MS encoding/decoding** - Mid/Side encoding in tv.ingest, proper L/R reconstruction in tv.egress
+- **1D matrix approach** with explicit dim_inputcount arguments eliminates load-order issues
+
 ### Currently Non-Functional
-- Audio passthrough not yet verified working end-to-end
-- Visual feedback loop not yet producing visible output
+- Visual feedback loop not yet producing visible output in jit.pwindow
 - GPU migration (`jit.gl.pix`) not yet implemented
 
 ### Implemented but Untested
-- MS-Flux encoding in tv.ingest gen~
-- ARGB→stereo decoding in tv.egress gen~
 - jit.rota/jit.slide/jit.sobel effect chain
 - live.dial parameter controls
+- Y-axis scrubbing for delay/echo effects
 
 ### Future Work
 - GPU-based effects via `jit.gl.pix` for performance
 - Reaction-Diffusion cellular automata effect
 - Datamosh freeze functionality
 - Warp X/Y distortion effects
+- Visual feedback loop debugging
