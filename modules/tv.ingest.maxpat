@@ -162,7 +162,7 @@
 									"numoutlets" : 4,
 									"outlettype" : [ "", "", "", "" ],
 									"patching_rect" : [ 50.0, 80.0, 400.0, 250.0 ],
-									"code" : "// Inputs\nLeft = in1;\nRight = in2;\n\n// Mid/Side encoding\nMid = (Left + Right) * 0.5;\nSide = (Left - Right) * 0.5;\n\n// Alpha: smoothed RMS envelope\nAlpha = slide(abs(Mid), 10, 100);\n\n// Green: spectral flux\nHistory prev_mid(0);\nFlux = abs(Mid - prev_mid);\nprev_mid = Mid;\n\n// Outputs (ARGB planes)\nout1 = Alpha;\nout2 = Mid;\nout3 = Flux;\nout4 = Side;"
+									"code" : "// Declarations first\nHistory prev_mid(0);\n\n// Inputs\nLeft = in1;\nRight = in2;\n\n// Mid/Side encoding\nMid = (Left + Right) * 0.5;\nSide = (Left - Right) * 0.5;\n\n// Alpha: smoothed RMS envelope\nAlpha = slide(abs(Mid), 10, 100);\n\n// Green: spectral flux\nFlux = abs(Mid - prev_mid);\nprev_mid = Mid;\n\n// Outputs (ARGB planes)\nout1 = Alpha;\nout2 = Mid;\nout3 = Flux;\nout4 = Side;"
 								}
 							},
 							{

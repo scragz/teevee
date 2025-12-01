@@ -39,6 +39,17 @@
 		"boxes" : [
 			{
 				"box" : {
+					"id" : "obj-matrix",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "jit_matrix", "" ],
+					"patching_rect" : [ 500.0, 50.0, 200.0, 22.0 ],
+					"text" : "jit.matrix tv_ram 4 float32 65536"
+				}
+			},
+			{
+				"box" : {
 					"id" : "obj-comment-title",
 					"maxclass" : "comment",
 					"numinlets" : 1,
@@ -67,17 +78,6 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 30.0, 700.0, 84.0, 22.0 ],
 					"text" : "plugout~ 1 2"
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-matrix",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 500.0, 50.0, 200.0, 22.0 ],
-					"text" : "jit.matrix tv_ram 4 float32 65536"
 				}
 			},
 			{
