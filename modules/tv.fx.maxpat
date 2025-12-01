@@ -58,7 +58,7 @@
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 680.0, 30.0, 30.0 ]
+					"patching_rect" : [ 50.0, 580.0, 30.0, 30.0 ]
 				}
 			},
 			{
@@ -67,8 +67,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 550.0, 30.0, 400.0, 20.0 ],
-					"text" : "tv.fx - GPU Effects via jit.gl.pix (tv.core.genjit)"
+					"patching_rect" : [ 500.0, 30.0, 400.0, 20.0 ],
+					"text" : "tv.fx - GPU Effects via jit.world + jit.gl.pix"
 				}
 			},
 			{
@@ -78,8 +78,19 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 550.0, 55.0, 450.0, 75.0 ],
-					"text" : "Signal Flow:\n1. Read tv_ram (1D) → reshape to 2D → upload to GPU\n2. jit.gl.pix processes with tv.core.genjit (uses History for feedback)\n3. Readback → reshape to 1D → write back to tv_ram\nNo explicit texture naming needed - shader handles feedback internally"
+					"patching_rect" : [ 500.0, 55.0, 400.0, 75.0 ],
+					"text" : "Signal Flow:\n1. bang → jit.world renders scene → output_matrix\n2. jit.gl.pix processes texture with tv.core.genjit shader\n3. jit.gl.videoplane displays to capture in jit.world\n4. Matrix output → reshape 1D → write back to tv_ram"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-world",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 3,
+					"outlettype" : [ "jit_matrix", "bang", "" ],
+					"patching_rect" : [ 50.0, 70.0, 380.0, 22.0 ],
+					"text" : "jit.world @visible 0 @enable 1 @output_matrix 1 @dim 256 256"
 				}
 			},
 			{
@@ -89,7 +100,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 50.0, 100.0, 200.0, 22.0 ],
+					"patching_rect" : [ 50.0, 130.0, 200.0, 22.0 ],
 					"text" : "jit.matrix tv_ram 4 float32 65536"
 				}
 			},
@@ -100,18 +111,19 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 50.0, 150.0, 200.0, 22.0 ],
+					"patching_rect" : [ 50.0, 170.0, 200.0, 22.0 ],
 					"text" : "jit.matrix 4 float32 256 256 @adapt 0"
 				}
 			},
 			{
 				"box" : {
-					"id" : "obj-comment-pix",
-					"maxclass" : "comment",
+					"id" : "obj-texture",
+					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 270.0, 200.0, 300.0, 20.0 ],
-					"text" : "GPU shader - History operator provides feedback"
+					"numoutlets" : 2,
+					"outlettype" : [ "jit_gl_texture", "" ],
+					"patching_rect" : [ 50.0, 210.0, 200.0, 22.0 ],
+					"text" : "jit.gl.texture @type float32 @dim 256 256"
 				}
 			},
 			{
@@ -120,9 +132,20 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 2,
-					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 50.0, 220.0, 300.0, 22.0 ],
+					"outlettype" : [ "jit_gl_texture", "" ],
+					"patching_rect" : [ 50.0, 250.0, 320.0, 22.0 ],
 					"text" : "jit.gl.pix @file tv.core.genjit @type float32 @dim 256 256"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-videoplane",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "jit_gl_texture", "" ],
+					"patching_rect" : [ 50.0, 290.0, 200.0, 22.0 ],
+					"text" : "jit.gl.videoplane @transform_reset 2"
 				}
 			},
 			{
@@ -132,18 +155,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 50.0, 280.0, 32.0, 22.0 ],
+					"patching_rect" : [ 50.0, 400.0, 32.0, 22.0 ],
 					"text" : "t l l"
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-comment-writeback",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 270.0, 340.0, 250.0, 20.0 ],
-					"text" : "Write processed data back to 1D tv_ram"
 				}
 			},
 			{
@@ -153,7 +166,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 150.0, 360.0, 200.0, 22.0 ],
+					"patching_rect" : [ 150.0, 450.0, 200.0, 22.0 ],
 					"text" : "jit.matrix 4 float32 65536 @adapt 0"
 				}
 			},
@@ -164,7 +177,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 150.0, 400.0, 200.0, 22.0 ],
+					"patching_rect" : [ 150.0, 490.0, 200.0, 22.0 ],
 					"text" : "jit.matrix tv_ram 4 float32 65536"
 				}
 			},
@@ -174,8 +187,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 550.0, 150.0, 300.0, 20.0 ],
-					"text" : "Parameter routing to jit.gl.pix (use 'param name val')"
+					"patching_rect" : [ 500.0, 150.0, 300.0, 20.0 ],
+					"text" : "Parameter routing to jit.gl.pix"
 				}
 			},
 			{
@@ -185,7 +198,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 550.0, 180.0, 120.0, 22.0 ],
+					"patching_rect" : [ 500.0, 180.0, 120.0, 22.0 ],
 					"text" : "r ---tv_param_scroll"
 				}
 			},
@@ -196,7 +209,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 550.0, 210.0, 155.0, 22.0 ],
+					"patching_rect" : [ 500.0, 210.0, 155.0, 22.0 ],
 					"text" : "prepend param scroll_speed"
 				}
 			},
@@ -207,7 +220,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 720.0, 180.0, 110.0, 22.0 ],
+					"patching_rect" : [ 680.0, 180.0, 110.0, 22.0 ],
 					"text" : "r ---tv_param_zoom"
 				}
 			},
@@ -218,7 +231,7 @@
 					"numinlets" : 6,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 720.0, 210.0, 100.0, 22.0 ],
+					"patching_rect" : [ 680.0, 210.0, 100.0, 22.0 ],
 					"text" : "scale 0. 1. 0.25 4."
 				}
 			},
@@ -229,7 +242,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 720.0, 240.0, 115.0, 22.0 ],
+					"patching_rect" : [ 680.0, 240.0, 115.0, 22.0 ],
 					"text" : "prepend param zoom"
 				}
 			},
@@ -240,7 +253,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 880.0, 180.0, 120.0, 22.0 ],
+					"patching_rect" : [ 850.0, 180.0, 120.0, 22.0 ],
 					"text" : "r ---tv_param_rotation"
 				}
 			},
@@ -251,7 +264,7 @@
 					"numinlets" : 6,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 880.0, 210.0, 145.0, 22.0 ],
+					"patching_rect" : [ 850.0, 210.0, 145.0, 22.0 ],
 					"text" : "scale 0. 1. -3.14159 3.14159"
 				}
 			},
@@ -262,7 +275,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 880.0, 240.0, 125.0, 22.0 ],
+					"patching_rect" : [ 850.0, 240.0, 125.0, 22.0 ],
 					"text" : "prepend param rotation"
 				}
 			},
@@ -273,7 +286,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 550.0, 280.0, 115.0, 22.0 ],
+					"patching_rect" : [ 500.0, 280.0, 115.0, 22.0 ],
 					"text" : "r ---tv_param_smear"
 				}
 			},
@@ -284,7 +297,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 550.0, 310.0, 120.0, 22.0 ],
+					"patching_rect" : [ 500.0, 310.0, 120.0, 22.0 ],
 					"text" : "prepend param smear"
 				}
 			},
@@ -295,7 +308,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 720.0, 280.0, 105.0, 22.0 ],
+					"patching_rect" : [ 680.0, 280.0, 105.0, 22.0 ],
 					"text" : "r ---tv_param_edge"
 				}
 			},
@@ -306,7 +319,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 720.0, 310.0, 140.0, 22.0 ],
+					"patching_rect" : [ 680.0, 310.0, 140.0, 22.0 ],
 					"text" : "prepend param edge_amount"
 				}
 			},
@@ -317,7 +330,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 550.0, 360.0, 115.0, 22.0 ],
+					"patching_rect" : [ 500.0, 360.0, 115.0, 22.0 ],
 					"text" : "r ---tv_param_warp_x"
 				}
 			},
@@ -328,7 +341,7 @@
 					"numinlets" : 6,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 550.0, 390.0, 100.0, 22.0 ],
+					"patching_rect" : [ 500.0, 390.0, 100.0, 22.0 ],
 					"text" : "scale 0. 1. -1. 1."
 				}
 			},
@@ -339,7 +352,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 550.0, 420.0, 125.0, 22.0 ],
+					"patching_rect" : [ 500.0, 420.0, 125.0, 22.0 ],
 					"text" : "prepend param warp_x"
 				}
 			},
@@ -350,7 +363,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 720.0, 360.0, 115.0, 22.0 ],
+					"patching_rect" : [ 680.0, 360.0, 115.0, 22.0 ],
 					"text" : "r ---tv_param_warp_y"
 				}
 			},
@@ -361,7 +374,7 @@
 					"numinlets" : 6,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 720.0, 390.0, 100.0, 22.0 ],
+					"patching_rect" : [ 680.0, 390.0, 100.0, 22.0 ],
 					"text" : "scale 0. 1. -1. 1."
 				}
 			},
@@ -372,7 +385,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 720.0, 420.0, 125.0, 22.0 ],
+					"patching_rect" : [ 680.0, 420.0, 125.0, 22.0 ],
 					"text" : "prepend param warp_y"
 				}
 			}
@@ -380,8 +393,20 @@
 		"lines" : [
 			{
 				"patchline" : {
-					"destination" : [ "obj-ram-read", 0 ],
+					"destination" : [ "obj-world", 0 ],
 					"source" : [ "obj-inlet", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-output-branch", 0 ],
+					"source" : [ "obj-world", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-ram-read", 0 ],
+					"source" : [ "obj-world", 1 ]
 				}
 			},
 			{
@@ -392,13 +417,19 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-pix", 0 ],
+					"destination" : [ "obj-texture", 0 ],
 					"source" : [ "obj-reshape-to-2d", 0 ]
 				}
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-output-branch", 0 ],
+					"destination" : [ "obj-pix", 0 ],
+					"source" : [ "obj-texture", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-videoplane", 0 ],
 					"source" : [ "obj-pix", 0 ]
 				}
 			},
