@@ -377,7 +377,7 @@
 						"boxes" : [
 							{
 								"box" : {
-									"id" : "obj-in-a",
+									"id" : "obj-in1",
 									"maxclass" : "newobj",
 									"numinlets" : 0,
 									"numoutlets" : 1,
@@ -388,7 +388,7 @@
 							},
 							{
 								"box" : {
-									"id" : "obj-in-r",
+									"id" : "obj-in2",
 									"maxclass" : "newobj",
 									"numinlets" : 0,
 									"numoutlets" : 1,
@@ -399,7 +399,7 @@
 							},
 							{
 								"box" : {
-									"id" : "obj-in-g",
+									"id" : "obj-in3",
 									"maxclass" : "newobj",
 									"numinlets" : 0,
 									"numoutlets" : 1,
@@ -410,7 +410,7 @@
 							},
 							{
 								"box" : {
-									"id" : "obj-in-b",
+									"id" : "obj-in4",
 									"maxclass" : "newobj",
 									"numinlets" : 0,
 									"numoutlets" : 1,
@@ -421,98 +421,32 @@
 							},
 							{
 								"box" : {
-									"id" : "obj-scale-r",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 150.0, 80.0, 82.0, 22.0 ],
-									"text" : "* 2. - 1."
+									"id" : "obj-codebox",
+									"maxclass" : "codebox",
+									"numinlets" : 4,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"patching_rect" : [ 50.0, 80.0, 350.0, 200.0 ],
+									"code" : "// Inputs from jit.peek~ planes\n// in1 = Alpha (dynamics) - not used for audio\n// in2 = Mid (L+R)/2\n// in3 = Flux - not used for audio\n// in4 = Side (L-R)/2\n\nMid = in2;\nSide = in4;\n\n// Decode M/S to L/R\n// L = Mid + Side\n// R = Mid - Side\nout1 = Mid + Side;\nout2 = Mid - Side;"
 								}
 							},
 							{
 								"box" : {
-									"id" : "obj-scale-g",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 250.0, 80.0, 82.0, 22.0 ],
-									"text" : "* 2. - 1."
-								}
-							},
-							{
-								"box" : {
-									"id" : "obj-scale-b",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 350.0, 80.0, 82.0, 22.0 ],
-									"text" : "* 2. - 1."
-								}
-							},
-							{
-								"box" : {
-									"id" : "obj-left-add",
-									"maxclass" : "newobj",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 100.0, 150.0, 30.0, 22.0 ],
-									"text" : "+"
-								}
-							},
-							{
-								"box" : {
-									"id" : "obj-right-add",
-									"maxclass" : "newobj",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 300.0, 150.0, 30.0, 22.0 ],
-									"text" : "+"
-								}
-							},
-							{
-								"box" : {
-									"id" : "obj-left-scale",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 100.0, 200.0, 42.0, 22.0 ],
-									"text" : "* 0.5"
-								}
-							},
-							{
-								"box" : {
-									"id" : "obj-right-scale",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 300.0, 200.0, 42.0, 22.0 ],
-									"text" : "* 0.5"
-								}
-							},
-							{
-								"box" : {
-									"id" : "obj-out-l",
+									"id" : "obj-out1",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 100.0, 250.0, 42.0, 22.0 ],
+									"patching_rect" : [ 50.0, 310.0, 42.0, 22.0 ],
 									"text" : "out 1"
 								}
 							},
 							{
 								"box" : {
-									"id" : "obj-out-r",
+									"id" : "obj-out2",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 300.0, 250.0, 42.0, 22.0 ],
+									"patching_rect" : [ 150.0, 310.0, 42.0, 22.0 ],
 									"text" : "out 2"
 								}
 							}
@@ -520,68 +454,38 @@
 						"lines" : [
 							{
 								"patchline" : {
-									"destination" : [ "obj-scale-r", 0 ],
-									"source" : [ "obj-in-r", 0 ]
+									"destination" : [ "obj-codebox", 0 ],
+									"source" : [ "obj-in1", 0 ]
 								}
 							},
 							{
 								"patchline" : {
-									"destination" : [ "obj-scale-g", 0 ],
-									"source" : [ "obj-in-g", 0 ]
+									"destination" : [ "obj-codebox", 1 ],
+									"source" : [ "obj-in2", 0 ]
 								}
 							},
 							{
 								"patchline" : {
-									"destination" : [ "obj-scale-b", 0 ],
-									"source" : [ "obj-in-b", 0 ]
+									"destination" : [ "obj-codebox", 2 ],
+									"source" : [ "obj-in3", 0 ]
 								}
 							},
 							{
 								"patchline" : {
-									"destination" : [ "obj-left-add", 0 ],
-									"source" : [ "obj-scale-r", 0 ]
+									"destination" : [ "obj-codebox", 3 ],
+									"source" : [ "obj-in4", 0 ]
 								}
 							},
 							{
 								"patchline" : {
-									"destination" : [ "obj-left-add", 1 ],
-									"source" : [ "obj-scale-g", 0 ]
+									"destination" : [ "obj-out1", 0 ],
+									"source" : [ "obj-codebox", 0 ]
 								}
 							},
 							{
 								"patchline" : {
-									"destination" : [ "obj-right-add", 0 ],
-									"source" : [ "obj-scale-g", 0 ]
-								}
-							},
-							{
-								"patchline" : {
-									"destination" : [ "obj-right-add", 1 ],
-									"source" : [ "obj-scale-b", 0 ]
-								}
-							},
-							{
-								"patchline" : {
-									"destination" : [ "obj-left-scale", 0 ],
-									"source" : [ "obj-left-add", 0 ]
-								}
-							},
-							{
-								"patchline" : {
-									"destination" : [ "obj-right-scale", 0 ],
-									"source" : [ "obj-right-add", 0 ]
-								}
-							},
-							{
-								"patchline" : {
-									"destination" : [ "obj-out-l", 0 ],
-									"source" : [ "obj-left-scale", 0 ]
-								}
-							},
-							{
-								"patchline" : {
-									"destination" : [ "obj-out-r", 0 ],
-									"source" : [ "obj-right-scale", 0 ]
+									"destination" : [ "obj-out2", 0 ],
+									"source" : [ "obj-codebox", 1 ]
 								}
 							}
 						]
