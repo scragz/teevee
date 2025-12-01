@@ -297,8 +297,8 @@
 					"maxclass" : "newobj",
 					"numinlets" : 2,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 280.0, 125.0, 22.0 ],
-					"text" : "jit.poke~ tv_ram 0"
+					"patching_rect" : [ 50.0, 280.0, 130.0, 22.0 ],
+					"text" : "jit.poke~ tv_ram 1 0"
 				}
 			},
 			{
@@ -307,8 +307,8 @@
 					"maxclass" : "newobj",
 					"numinlets" : 2,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 320.0, 125.0, 22.0 ],
-					"text" : "jit.poke~ tv_ram 1"
+					"patching_rect" : [ 50.0, 320.0, 130.0, 22.0 ],
+					"text" : "jit.poke~ tv_ram 1 1"
 				}
 			},
 			{
@@ -317,8 +317,8 @@
 					"maxclass" : "newobj",
 					"numinlets" : 2,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 360.0, 125.0, 22.0 ],
-					"text" : "jit.poke~ tv_ram 2"
+					"patching_rect" : [ 50.0, 360.0, 130.0, 22.0 ],
+					"text" : "jit.poke~ tv_ram 1 2"
 				}
 			},
 			{
@@ -327,8 +327,8 @@
 					"maxclass" : "newobj",
 					"numinlets" : 2,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 400.0, 125.0, 22.0 ],
-					"text" : "jit.poke~ tv_ram 3"
+					"patching_rect" : [ 50.0, 400.0, 130.0, 22.0 ],
+					"text" : "jit.poke~ tv_ram 1 3"
 				}
 			}
 		],

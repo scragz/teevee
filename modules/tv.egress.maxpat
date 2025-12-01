@@ -290,8 +290,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 200.0, 100.0, 22.0 ],
-					"text" : "jit.peek~ tv_ram 0"
+					"patching_rect" : [ 50.0, 200.0, 110.0, 22.0 ],
+					"text" : "jit.peek~ tv_ram 1 0"
 				}
 			},
 			{
@@ -301,8 +301,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 170.0, 200.0, 100.0, 22.0 ],
-					"text" : "jit.peek~ tv_ram 1"
+					"patching_rect" : [ 170.0, 200.0, 110.0, 22.0 ],
+					"text" : "jit.peek~ tv_ram 1 1"
 				}
 			},
 			{
@@ -312,8 +312,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 290.0, 200.0, 100.0, 22.0 ],
-					"text" : "jit.peek~ tv_ram 2"
+					"patching_rect" : [ 290.0, 200.0, 110.0, 22.0 ],
+					"text" : "jit.peek~ tv_ram 1 2"
 				}
 			},
 			{
@@ -323,8 +323,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 410.0, 200.0, 100.0, 22.0 ],
-					"text" : "jit.peek~ tv_ram 3"
+					"patching_rect" : [ 410.0, 200.0, 110.0, 22.0 ],
+					"text" : "jit.peek~ tv_ram 1 3"
 				}
 			},
 			{
