@@ -151,6 +151,17 @@
 			},
 			{
 				"box" : {
+					"id" : "obj-recv-scrub",
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 450.0, 200.0, 140.0, 22.0 ],
+					"text" : "receive~ ---tv_scrub_audio"
+				}
+			},
+			{
+				"box" : {
 					"id" : "obj-scroll-line",
 					"maxclass" : "newobj",
 					"numinlets" : 2,
@@ -335,12 +346,23 @@
 			},
 			{
 				"box" : {
+					"id" : "obj-scrub-add",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 300.0, 260.0, 30.0, 22.0 ],
+					"text" : "+~"
+				}
+			},
+			{
+				"box" : {
 					"id" : "obj-delay-wrap",
 					"maxclass" : "newobj",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 300.0, 260.0, 70.0, 22.0 ],
+					"patching_rect" : [ 300.0, 290.0, 70.0, 22.0 ],
 					"text" : "%~ 88200"
 				}
 			},
@@ -847,8 +869,20 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-delay-wrap", 0 ],
+					"destination" : [ "obj-scrub-add", 0 ],
 					"source" : [ "obj-delay-read-idx", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-scrub-add", 1 ],
+					"source" : [ "obj-recv-scrub", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-delay-wrap", 0 ],
+					"source" : [ "obj-scrub-add", 0 ]
 				}
 			},
 			{

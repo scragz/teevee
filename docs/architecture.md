@@ -49,6 +49,7 @@ This map defines how visual transformations translate to audio DSP. We use **Mec
 | **ROTATE** | **2D Rotation** (Twist) | **Frequency Shift** (Spectrum Shift) | Displacing the content from its center. Rotating pixels = Shifting Hertz. |
 | **SMEAR** | **Frame Feedback** (Blur) | **Reverb / Feedback** (Decay) | The refusal of the signal to die. Trails in space = Trails in time. |
 | **FREEZE** | **Pixel Sorting / Bloom** | **Buffer Loop** (Gating) | Time stops. The current moment is trapped and degrades into entropy. |
+| **SCRUB** | **Horizontal Displacement** (Tracking Error) | **Index Jitter** (Pitch Warble) | Tape slip. Random noise destabilizes the read position. |
 
 -----
 
@@ -148,9 +149,9 @@ void main() {
 
 ### 2. The Scrubber (Tape Slip)
 
-  * **Trigger:** Random LFO.
-  * **Audio Action:** Adds jittery noise to the `index~` read pointer. Creates pitch warble/flutter.
-  * **Video Action:** Adds `noise` to the Shader `st.x` coordinate. Creates "tracking error" horizontal displacement.
+  * **Trigger:** Scrub amount parameter (0-1) controls intensity of random LFO.
+  * **Audio Action:** Adds jittery noise to the `index~` read pointer in tv.audio. Creates pitch warble/flutter.
+  * **Video Action:** Adds noise to the `offset_x` in jit.rota. Creates "tracking error" horizontal displacement.
 
 -----
 
@@ -201,6 +202,7 @@ All parameters arrive at `tv.param.maxpat` as normalized 0-1 values from the UI.
 | **Rotate** | 0-1 | -500 to +500 Hz | `freqshift~` | Bode frequency shifter |
 | **Smear** | 0-1 | 0-1 wet/dry | `*~` crossfade | 0 = dry, 1 = full reverb |
 | **Freeze** | 0/1 | 0/1 gate | `*~` gates input | Stops buffer writing when frozen |
+| **Scrub** | 0-1 | 0-500 samples jitter | `+~` on read index | Random LFO modulates delay read position |
 
 ### Visual Engine Scaling (tv.core.genjit)
 
@@ -212,6 +214,7 @@ All parameters arrive at `tv.param.maxpat` as normalized 0-1 values from the UI.
 | **Smear** | 0-1 | 0-0.95 | `smear` | Frame feedback (capped to prevent infinite) |
 | **Edge** | 0-1 | 0-1 | `edge_amount` | Sobel edge detection mix |
 | **Warp X/Y** | 0-1 | -1 to +1 | `warp_x`, `warp_y` | Barrel/pincushion distortion |
+| **Scrub** | LFO signal | -128 to +128 | `offset_x` in jit.rota | Horizontal tracking error displacement |
 
 ### Freeze Behavior
 

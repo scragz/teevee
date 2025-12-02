@@ -17,6 +17,7 @@
 		<param id="4" name="edge_amount" type="float" default="0" min="0" max="1" />
 		<param id="5" name="warp_x" type="float" default="0" min="-1" max="1" />
 		<param id="6" name="warp_y" type="float" default="0" min="-1" max="1" />
+		<param id="7" name="scrub" type="float" default="0" min="-1" max="1" />
 	</params>
 	<code><![CDATA[
 // History for feedback - stores previous output frame
@@ -51,6 +52,10 @@ uv_warped = uv_zoomed * warp_factor;
 // Un-center and apply scroll
 uv_feedback = uv_warped + center;
 uv_feedback.y = uv_feedback.y - scroll_speed;
+
+// Apply scrub (horizontal tracking error displacement)
+// This creates the "tape slip" visual effect
+uv_feedback.x = uv_feedback.x + scrub;
 
 // Wrap coordinates for feedback sampling
 uv_feedback = wrap(uv_feedback, 0, 1);

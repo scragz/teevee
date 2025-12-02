@@ -66,10 +66,10 @@
 					"id" : "obj-trigger",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 6,
-					"outlettype" : [ "bang", "bang", "bang", "bang", "bang", "bang" ],
-					"patching_rect" : [ 50.0, 70.0, 400.0, 22.0 ],
-					"text" : "t b b b b b b"
+					"numoutlets" : 7,
+					"outlettype" : [ "bang", "bang", "bang", "bang", "bang", "bang", "bang" ],
+					"patching_rect" : [ 50.0, 70.0, 450.0, 22.0 ],
+					"text" : "t b b b b b b b"
 				}
 			},
 			{
@@ -245,6 +245,50 @@
 					"outlettype" : [ "float" ],
 					"patching_rect" : [ 890.0, 90.0, 45.0, 22.0 ],
 					"text" : "float 0."
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-r-scrub",
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 500.0, 200.0, 100.0, 22.0 ],
+					"text" : "r ---tv_scrub_viz"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-scrub-store",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "float" ],
+					"patching_rect" : [ 500.0, 230.0, 45.0, 22.0 ],
+					"text" : "float 0."
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-scrub-scale",
+					"maxclass" : "newobj",
+					"numinlets" : 6,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 500.0, 260.0, 115.0, 22.0 ],
+					"text" : "scale -1. 1. -128. 128."
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-scrub-prepend",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 500.0, 290.0, 85.0, 22.0 ],
+					"text" : "prepend offset_x"
 				}
 			},
 			{
@@ -535,6 +579,36 @@
 				"patchline" : {
 					"destination" : [ "obj-rotate-store", 0 ],
 					"source" : [ "obj-trigger", 5 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-scrub-store", 0 ],
+					"source" : [ "obj-trigger", 6 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-scrub-store", 1 ],
+					"source" : [ "obj-r-scrub", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-scrub-scale", 0 ],
+					"source" : [ "obj-scrub-store", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-scrub-prepend", 0 ],
+					"source" : [ "obj-scrub-scale", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-rota", 0 ],
+					"source" : [ "obj-scrub-prepend", 0 ]
 				}
 			},
 			{

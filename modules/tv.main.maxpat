@@ -310,7 +310,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 940.0, 100.0, 24.0, 24.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 210.0, 92.0, 24.0, 24.0 ],
+					"presentation_rect" : [ 260.0, 92.0, 24.0, 24.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Freeze",
@@ -322,6 +322,42 @@
 						}
 					},
 					"varname" : "freeze"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-dial-scrub",
+					"maxclass" : "live.dial",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "float" ],
+					"parameter_enable" : 1,
+					"patching_rect" : [ 1000.0, 100.0, 44.0, 48.0 ],
+					"presentation" : 1,
+					"presentation_rect" : [ 210.0, 80.0, 44.0, 48.0 ],
+					"saved_attribute_attributes" : {
+						"valueof" : {
+							"parameter_longname" : "Scrub",
+							"parameter_shortname" : "Scrub",
+							"parameter_type" : 0,
+							"parameter_unitstyle" : 1,
+							"parameter_mmin" : 0.0,
+							"parameter_mmax" : 1.0,
+							"parameter_initial" : [ 0.0 ],
+							"parameter_initial_enable" : 1
+						}
+					},
+					"varname" : "scrub"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-s-scrub-amt",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 1000.0, 350.0, 100.0, 22.0 ],
+					"text" : "s ---tv_scrub_amt"
 				}
 			},
 			{
@@ -450,7 +486,7 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 940.0, 130.0, 50.0, 20.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 205.0, 116.0, 35.0, 20.0 ],
+					"presentation_rect" : [ 255.0, 116.0, 35.0, 20.0 ],
 					"text" : "Frz",
 					"textcolor" : [ 0.7, 0.7, 0.7, 1.0 ]
 				}
@@ -464,7 +500,7 @@
 					"outlettype" : [ "jit_matrix", "" ],
 					"patching_rect" : [ 450.0, 550.0, 192.0, 192.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 245.0, 6.0, 128.0, 128.0 ]
+					"presentation_rect" : [ 295.0, 6.0, 128.0, 128.0 ]
 				}
 			},
 			{
@@ -477,7 +513,7 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 700.0, 560.0, 100.0, 30.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 0.0, 0.0, 380.0, 140.0 ]
+					"presentation_rect" : [ 0.0, 0.0, 430.0, 140.0 ]
 				}
 			}
 		],
@@ -627,6 +663,12 @@
 					"destination" : [ "obj-s-freeze-audio", 0 ],
 					"source" : [ "obj-dial-freeze", 0 ]
 				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-s-scrub-amt", 0 ],
+					"source" : [ "obj-dial-scrub", 0 ]
+				}
 			}
 		],
 		"parameters" : {
@@ -635,6 +677,7 @@
 			"obj-dial-rotate" : [ "Rotate", "Rotate", 0 ],
 			"obj-dial-smear" : [ "Smear", "Smear", 0 ],
 			"obj-dial-freeze" : [ "Freeze", "Freeze", 0 ],
+			"obj-dial-scrub" : [ "Scrub", "Scrub", 0 ],
 			"parameterbanks" : {
 				"0" : {
 					"index" : 0,

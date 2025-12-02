@@ -9,7 +9,7 @@
 			"modernui" : 1
 		},
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 700.0, 550.0 ],
+		"rect" : [ 100.0, 100.0, 900.0, 650.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -31,9 +31,9 @@
 		"enablehscroll" : 1,
 		"enablevscroll" : 1,
 		"devicewidth" : 0.0,
-		"description" : "tv.sync - Master clock and index generation",
-		"digest" : "Centralized timing for read/write synchronization",
-		"tags" : "teevee, sync, clock",
+		"description" : "tv.sync - Master clock, index generation, and scrub LFO",
+		"digest" : "Centralized timing for read/write synchronization with tape slip modulation",
+		"tags" : "teevee, sync, clock, scrub, lfo",
 		"style" : "",
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
@@ -68,6 +68,124 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 400.0, 50.0, 250.0, 20.0 ],
 					"text" : "tv.sync - Master Clock Module"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-scrub-section",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 500.0, 100.0, 250.0, 20.0 ],
+					"text" : "=== SCRUB LFO (Tape Slip) ==="
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-r-scrub",
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 500.0, 130.0, 100.0, 22.0 ],
+					"text" : "r ---tv_scrub_amt"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-scrub-line",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 2,
+					"outlettype" : [ "signal", "bang" ],
+					"patching_rect" : [ 500.0, 160.0, 60.0, 22.0 ],
+					"text" : "line~ 0 20"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-noise",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 620.0, 160.0, 45.0, 22.0 ],
+					"text" : "noise~"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-noise-lp",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 620.0, 190.0, 80.0, 22.0 ],
+					"text" : "onepole~ 0.99"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-scrub-scale",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 500.0, 220.0, 30.0, 22.0 ],
+					"text" : "*~"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-scrub-audio-scale",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 500.0, 260.0, 55.0, 22.0 ],
+					"text" : "*~ 500."
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-s-scrub-audio",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 500.0, 300.0, 130.0, 22.0 ],
+					"text" : "send~ ---tv_scrub_audio"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-scrub-viz-scale",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 680.0, 260.0, 50.0, 22.0 ],
+					"text" : "*~ 0.1"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-snapshot-scrub",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 2,
+					"outlettype" : [ "float", "bang" ],
+					"patching_rect" : [ 680.0, 300.0, 70.0, 22.0 ],
+					"text" : "snapshot~ 30"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-s-scrub-viz",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 680.0, 340.0, 110.0, 22.0 ],
+					"text" : "s ---tv_scrub_viz"
 				}
 			},
 			{
@@ -192,6 +310,62 @@
 			}
 		],
 		"lines" : [
+			{
+				"patchline" : {
+					"destination" : [ "obj-scrub-line", 0 ],
+					"source" : [ "obj-r-scrub", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-noise-lp", 0 ],
+					"source" : [ "obj-noise", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-scrub-scale", 1 ],
+					"source" : [ "obj-noise-lp", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-scrub-scale", 0 ],
+					"source" : [ "obj-scrub-line", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-scrub-audio-scale", 0 ],
+					"order" : 1,
+					"source" : [ "obj-scrub-scale", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-scrub-viz-scale", 0 ],
+					"order" : 0,
+					"source" : [ "obj-scrub-scale", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-s-scrub-audio", 0 ],
+					"source" : [ "obj-scrub-audio-scale", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-snapshot-scrub", 0 ],
+					"source" : [ "obj-scrub-viz-scale", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-s-scrub-viz", 0 ],
+					"source" : [ "obj-snapshot-scrub", 0 ]
+				}
+			},
 			{
 				"patchline" : {
 					"destination" : [ "obj-scale-write-x", 0 ],
