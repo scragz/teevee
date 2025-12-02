@@ -19,11 +19,17 @@
 		<param id="6" name="warp_y" type="float" default="0" min="-1" max="1" />
 	</params>
 	<code><![CDATA[
+// History for feedback - stores previous output frame
+History feedback_frame(0);
+
 // Get normalized coordinates
 uv = norm;
 center = vec(0.5, 0.5);
 
-// Center the UVs for rotation/zoom
+// Sample input texture at current position (the audio-encoded data)
+input_color = sample(in1, uv);
+
+// Center the UVs for rotation/zoom (for feedback sampling)
 uv_centered = uv - center;
 
 // Apply rotation
@@ -43,33 +49,35 @@ warp_factor = 1.0 + dist * dist * (warp_x + warp_y * dist);
 uv_warped = uv_zoomed * warp_factor;
 
 // Un-center and apply scroll
-uv_final = uv_warped + center;
-uv_final.y = uv_final.y - scroll_speed;
+uv_feedback = uv_warped + center;
+uv_feedback.y = uv_feedback.y - scroll_speed;
 
-// Wrap coordinates
-uv_final = wrap(uv_final, 0, 1);
+// Wrap coordinates for feedback sampling
+uv_feedback = wrap(uv_feedback, 0, 1);
 
-// Sample the feedback texture
-current = sample(in1, uv_final);
+// Sample the feedback (previous frame with transforms applied)
+feedback_color = sample(feedback_frame, uv_feedback);
 
-// Edge detection (Sobel-like)
+// Edge detection on feedback (Sobel-like)
 texel = 1.0 / dim;
-left = sample(in1, uv_final + vec(-texel.x, 0));
-right = sample(in1, uv_final + vec(texel.x, 0));
-up = sample(in1, uv_final + vec(0, -texel.y));
-down = sample(in1, uv_final + vec(0, texel.y));
+left = sample(feedback_frame, uv_feedback + vec(-texel.x, 0));
+right = sample(feedback_frame, uv_feedback + vec(texel.x, 0));
+up = sample(feedback_frame, uv_feedback + vec(0, -texel.y));
+down = sample(feedback_frame, uv_feedback + vec(0, texel.y));
 
 edge_h = abs(left - right);
 edge_v = abs(up - down);
 edge = (edge_h + edge_v) * 0.5;
 
-// Mix edge detection
-current = mix(current, current + edge, edge_amount);
+// Mix edge detection into feedback
+feedback_with_edge = mix(feedback_color, feedback_color + edge, edge_amount);
 
-// Smear: blend with previous frame (temporal blur)
-History prev_frame(0);
-output = mix(current, prev_frame, smear);
-prev_frame = output;
+// Blend input with processed feedback (smear controls feedback amount)
+// At smear=0: pure input, at smear=1: pure feedback
+output = mix(input_color, feedback_with_edge, smear);
+
+// Store output for next frame's feedback
+feedback_frame = output;
 
 // Output
 out1 = output;

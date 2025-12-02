@@ -1,4 +1,4 @@
-# System Architecture: Teevee v5 (M4L Compatible)
+# System Architecture: Teevee v6 (M4L Compatible)
 
 ## I. Core Concept
 Teevee is a **Feedback Ring Buffer** acting as a real-time "Slit-Scan" audio processor. We turn a stream of time (Audio) into a static block of memory (Video), manipulate it via GPU shaders, and decode it back into time.
@@ -100,6 +100,7 @@ plugin~ → gen~ (encode) → jit.poke~ tv_ram 1 0 (plane 0)
 - **Declarations first:** In gen~ codebox, `History` and `Param` declarations MUST come before any expressions
 - **No floor~:** Use `trunc~` instead of `floor~` (floor~ doesn't exist in Max 8.6)
 - **No wrap:** Use `expr fmod($f1, 256.)` instead of `wrap` for modulo operations outside gen~
+- **No wrap~:** The `wrap~` object does not exist. Use `%~` (modulo) instead. For wrapping negative values: `+~ size` then `%~ size`
 
 ### Legacy Approach (standalone Max only)
 1.  **Encoding:** Audio enters `gen~` for MS-Flux encoding.
@@ -124,12 +125,77 @@ The correct method is to move immediately to **OpenGL (GPU)**.
 
 ---
 
-## V. The Transformation Engine (GPU FX Chain)
-This engine uses GPU-based processing via `jit.gl.pix` with the `tv.core.genjit` shader for all effects in a single pass.
+## V. The Transformation Engine (FX Chain)
 
-**Current Implementation (v5):** GPU-based processing via `jit.world` + `jit.gl.pix @file tv.core.genjit`.
+### ⚠️ Audio-Safe vs Audio-Destroying Operations
 
-### GPU Signal Flow
+**CRITICAL:** Most visual effects destroy audio when applied to the matrix buffer. Only integer-based operations preserve audio quality.
+
+#### Audio-Safe Operations (Implemented)
+| Operation | Method | Sonic Effect |
+|-----------|--------|--------------|
+| **Integer Scroll** | Add integer offset to read index, wrap with `%~` | Delay line, echo |
+| **Feedback/Smear** | `new * (1-smear) + previous * smear` via jit.op | Temporal blur, reverb wash |
+| **Gain** | jit.op multiply | Volume |
+| **Invert** | jit.op * -1 | Phase flip |
+
+#### Audio-Destroying Operations (NOT Implemented)
+These use interpolation which smears audio into noise:
+- **jit.rota rotation** - forces mid into side plane, ring mod effect but destroys signal
+- **Non-integer zoom** - resampling with interpolation
+- **Float scroll** - interpolated read positions
+- **Warp/distortion** - any coordinate transform with non-integer positions
+- **jit.slide** - temporal smoothing destroys transients
+- **Edge detection** - high-pass filtering destroys fundamental
+
+### Current Implementation (v6): CPU-Based Processing
+The current working implementation uses simple CPU-based effects that preserve audio:
+
+**tv.fx signal flow:**
+```
+Bang trigger
+    ↓
+jit.matrix tv_ram (read input)
+    ↓
+jit.op @op * (scale by 1-smear)
+    +
+jit.matrix tv_ram_out (read previous) → jit.op @op * (scale by smear)
+    ↓
+jit.op @op + (mix new + previous)
+    ↓
+jit.matrix tv_ram_out (write output)
+    ↓
+jit.matrix 256x256 (reshape for viz)
+    ↓
+jit.op @op abs → jit.op @op * 3 (boost for display)
+    ↓
+output to viz/pwindow
+```
+
+**tv.egress signal flow (integer scroll):**
+```
+Read index (0-65535 signal)
+    ↓
++~ scroll_offset (integer, -32768 to 32768)
+    ↓
++~ 65536. (ensure positive for negative offsets)
+    ↓
+%~ 65536. (wrap to valid range)
+    ↓
+trunc~ (ensure integer)
+    ↓
+jit.peek~ tv_ram_out 1 1 (read Mid)
+jit.peek~ tv_ram_out 1 3 (read Side)
+    ↓
+M/S decode: L = Mid + Side, R = Mid - Side
+    ↓
+Audio output
+```
+
+### GPU Processing (Future/Planned)
+GPU-based processing via `jit.gl.pix` is documented below but NOT currently active due to audio quality concerns. GPU effects would need careful design to avoid interpolation.
+
+### GPU Signal Flow (Reference - Not Currently Active)
 ```
 jit.matrix tv_ram (1D 65536)
     ↓
@@ -179,13 +245,13 @@ All effects are combined in a single `jit.gl.pix` shader for optimal performance
 7. **Smear:** Temporal interpolation with previous frame via `History`
 8. **Output:** Final processed pixel
 
-### Sonic Results
+### Sonic Results (GPU - Planned)
 * **Scroll:** Creates the continuous history/delay buffer
-* **Zoom:** Pitch shifting (resampling the delay line)
-* **Rotation:** Ring modulation (forces Mid data into Side plane)
+* **Zoom:** Pitch shifting (resampling the delay line) - ⚠️ destroys audio via interpolation
+* **Rotation:** Ring modulation (forces Mid data into Side plane) - ⚠️ destroys audio
 * **Smear:** "Spectral Freezing" - transients lose attack, decays into reverb wash
-* **Edge:** Rhythmic extraction - strips body/bass, leaves click/attack
-* **Warp:** Barrel/pincushion creates frequency-dependent time smearing
+* **Edge:** Rhythmic extraction - strips body/bass, leaves click/attack - ⚠️ destroys audio
+* **Warp:** Barrel/pincushion creates frequency-dependent time smearing - ⚠️ destroys audio
 
 ---
 
@@ -241,47 +307,64 @@ To avoid CPU spikes and latency:
 | `trunc~` | ✅ | Use instead of floor~ |
 | `floor~` | ❌ | Does not exist in Max 8.6 |
 | `wrap` | ❌ | Use `expr fmod()` instead |
+| `wrap~` | ❌ | Does not exist. Use `%~` (modulo) instead |
+| `%~` | ✅ | Modulo for signals. For wrapping negative: `+~ size` then `%~ size` |
 
 ---
 
-## IX. Current Module Structure (v5)
+## IX. Current Module Structure (v6)
 
 ```
-teevee-v5.amxd
+teevee.amxd
   └── tv.main.maxpat (orchestrator)
-        ├── jit.matrix tv_ram 4 float32 65536 (master 1D buffer)
+        ├── jit.matrix tv_ram 4 float32 65536 (input buffer)
+        ├── jit.matrix tv_ram_out 4 float32 65536 (output buffer)
         ├── tv.sync.maxpat (timing/index generation)
         ├── tv.ingest.maxpat (audio→matrix via jit.poke~)
-        ├── tv.egress.maxpat (matrix→audio via jit.peek~)
-        ├── tv.fx.maxpat (visual effects chain)
-        ├── tv.param.maxpat (parameter distribution)
+        ├── tv.fx.maxpat (feedback/smear processing)
+        ├── tv.egress.maxpat (matrix→audio via jit.peek~ with scroll)
         └── tv.viz.maxpat (visualization)
 ```
 
 ### Module Communication
 - **Send/Receive:** Parameters use `---tv_param_*` naming (with M4L scoping prefix)
-- **Named Matrix:** Uses `tv_ram` (without prefix) for cross-subpatcher matrix access
+- **Named Matrices:** `tv_ram` (input) and `tv_ram_out` (processed output)
 - **Y Counter:** `---tv_write_y` broadcasts current write row from tv.sync
+
+### Parameters (v6)
+| Parameter | Bus Name | Range | Default | Effect |
+|-----------|----------|-------|---------|--------|
+| Scroll | `---tv_param_scroll` | 0-1 | 0.5 | Read offset (0.5 = no offset, 0/1 = ±32768 samples) |
+| Smear | `---tv_param_smear` | 0-1 | 0 | Feedback mix (0 = clean, 1 = full freeze) |
 
 ---
 
 ## X. Known Issues & Status
 
-### ✅ Working
+### ✅ Working (v6)
 - **Stereo audio passthrough** via jit.poke~/jit.peek~ pipeline
 - **MS encoding/decoding** - Mid/Side encoding in tv.ingest, proper L/R reconstruction in tv.egress
 - **1D matrix approach** with explicit dim_inputcount arguments eliminates load-order issues
-- **GPU processing pipeline** via jit.world + jit.gl.pix with tv.core.genjit shader
+- **Integer scroll** - read offset in tv.egress for delay/echo effects
+- **Feedback/Smear** - temporal mixing in tv.fx for reverb-like effects
+- **Two named matrices** - tv_ram (input) and tv_ram_out (processed) for proper separation
+- **Simplified UI** - 2 knobs (Scroll, Smear) that actually work
 
-### Implemented (Needs Testing)
-- **GPU effects chain** - scroll, zoom, rotation, smear, edge, warp all in single shader
-- **GPU↔CPU readback** - every frame readback for audio via jit.peek~
-- **Feedback texture loop** - GPU-side temporal feedback
-- **live.dial parameter controls** - mapped to shader params
-- **Y-axis scrubbing** for delay/echo effects
+### ⚠️ Gotchas Discovered
+- `wrap~` does not exist in Max - use `%~` with `+~ size` to handle negatives
+- `floor~` does not exist in Max 8.6 - use `trunc~`
+- Most GPU/visual effects destroy audio due to interpolation
+- jit.rota, zoom, warp all use interpolation and turn audio to noise
+- Only integer-based read offsets preserve audio quality
 
-### Future Work
-- Reaction-Diffusion cellular automata effect (add to shader)
-- Datamosh freeze functionality (stop scroll + ingest)
-- Performance profiling and optimization
-- Throttle readback if CPU bottleneck detected
+### Future Work (Planned)
+- **Datamosh freeze** - stop scroll + ingest while keeping smear active
+- **Y-axis scrubbing** - manual history navigation via read Y offset
+- **Audio-safe GPU effects** - investigate integer-only GPU operations
+- **Reaction-Diffusion** - may work if coefficients are audio-preserving
+- **Performance profiling** - optimize if CPU becomes bottleneck
+- **Additional audio-safe effects:**
+  - Gain/volume control
+  - Phase invert
+  - Bit depth reduction (quantization)
+  - Sample-and-hold (integer intervals only)
