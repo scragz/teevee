@@ -1,10 +1,10 @@
-# System Architecture: Teevee v7 (Twin Engine / Parallel)
+# System Architecture: Teevee
 
 ## I. Core Concept
 
-**Teevee v7** abandons the "Audio-inside-Video" architecture (v6) in favor of a **Parallel Twin Engine**.
+Teevee uses a **Parallel Twin Engine** architecture.
 
-We no longer process audio inside Jitter matrices. Instead, we run two simultaneous processing chains driven by a unified control system.
+Two simultaneous processing chains are driven by a unified control system.
 
   * **The Audio Engine (MSP):** High-fidelity, 64-bit, artifact-free DSP.
   * **The Video Engine (Jitter):** A reactive "Heads-Up Display" that visualizes the audio manipulations using metaphorical shaders.
@@ -98,7 +98,7 @@ This engine prioritizes aesthetics and frame rate. It does **not** affect the so
 We do not write raw audio to the texture (it looks like static). We write **Features**.
 
   * **Objects:** `jit.poke~` into `jit.matrix tv_viz_ram 4 float32 256 256`.
-  * **The MS-Flux Mapping (Restored from v2.5):**
+  * **The MS-Flux Mapping:**
       * **Plane 0 (Alpha):** Audio Amplitude (RMS).
       * **Plane 1 (Red):** Mono Signal (Waveform).
       * **Plane 2 (Green):** Spectral Flux (High-frequency content).
@@ -106,7 +106,7 @@ We do not write raw audio to the texture (it looks like static). We write **Feat
 
 ### 2. The Shader (`jit.gl.pix`)
 
-The shader performs the "Unsafe" transforms that we removed from v6.
+The shader performs visual transforms that correspond to audio DSP operations.
 
 ```glsl
 // Concept Code for tv.core.genjit
@@ -154,17 +154,7 @@ void main() {
 
 -----
 
-## VII. Advantages of v7 Architecture
-
-1. **Audio Quality:** 100% MSP 64-bit float. No interpolation noise from video processing.
-2. **Safety:** GPU crashes do not kill the audio stream.
-3. **Flexibility:** Visual effects can be exaggerated without destroying audio.
-4. **M4L Stability:** Removes the complex "matrix-to-signal" dependency.
-5. **CPU Efficiency:** Standard MSP objects are more efficient than jit.peek~/poke~ round-trips.
-
------
-
-## VIII. Module Reference
+## VII. Module Reference
 
 ### Directory Structure
 
@@ -177,8 +167,7 @@ Teevee_Project/
 │   ├── tv.sync.maxpat      (The Clock: Master timing)
 │   ├── tv.ingest.maxpat    (PATH B: Audio features → Viz matrix)
 │   ├── tv.viz.maxpat       (PATH B: Display)
-│   ├── tv.param.maxpat     (The Hub: Dual-path parameter distribution)
-│   └── tv.egress.maxpat    (DEPRECATED - kept for reference)
+│   └── tv.param.maxpat     (Dual-path parameter distribution)
 └── code/
     ├── tv.encode.gendsp    (Viz only: L/R → features for display)
     └── tv.core.genjit      (Video Gen: Scroll, Warp, Smear, Edge)
@@ -194,11 +183,10 @@ Teevee_Project/
 | **tv.ingest.maxpat** | Writes audio features to visualization-only matrix (---tv_viz_ram) |
 | **tv.viz.maxpat** | Display rendering |
 | **tv.param.maxpat** | Dual-path parameter distribution hub - routes controls to both engines |
-| **tv.egress.maxpat** | DEPRECATED - Old v6 matrix-to-audio reader, kept for reference only |
 
 -----
 
-## IX. Parameter Reference (v7.1)
+## VIII. Parameter Reference
 
 ### Input Parameter Ranges (UI Dials: 0-1)
 
@@ -258,9 +246,9 @@ These objects caused "No such object" errors:
 
 -----
 
-## Appendix II. Current tv.audio.maxpat Architecture
+## Appendix II. tv.audio.maxpat Architecture
 
-The working audio engine uses a 4-stage serial processing chain:
+The audio engine uses a 4-stage serial processing chain:
 
 ```
 Input L/R
@@ -302,13 +290,13 @@ Output L/R
 - `r ---tv_audio_zoom` → playback speed (0.5-2.0)
 - `r ---tv_audio_rotate` → freq shift (-500 to +500 Hz)
 - `r ---tv_audio_smear` → reverb wet/dry (0-1)
-- `r ---tv_audio_freeze` → (not yet implemented)
+- `r ---tv_audio_freeze` → gate (0/1)
 
 -----
 
-## Appendix III. Current tv.fx.maxpat Architecture
+## Appendix III. tv.fx.maxpat Architecture
 
-The working visualization engine uses a 5-stage processing chain:
+The visualization engine uses a 5-stage processing chain:
 
 ```
 Bang (frame trigger from tv.sync)

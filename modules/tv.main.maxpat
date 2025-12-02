@@ -31,7 +31,7 @@
 		"enablehscroll" : 1,
 		"enablevscroll" : 1,
 		"devicewidth" : 300.0,
-		"description" : "Teevee v7 - Twin Engine Audio/Video Synthesizer",
+		"description" : "Teevee",
 		"digest" : "Parallel audio (MSP) and video (Jitter) processing",
 		"tags" : "audio video jitter m4l feedback twin-engine",
 		"style" : "",
