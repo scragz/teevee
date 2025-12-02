@@ -154,36 +154,37 @@ void main() {
 
 -----
 
-## VII. Implementation Roadmap
+## VII. Advantages of v7 Architecture
 
-### Phase 1: The New Engine Block (`tv.audio`)
-
-  * Build the `buffer~` / `poke~` / `index~` rig.
-  * Implement `freqshift~` and `cverb~` loops.
-  * Ensure CPU usage is low (standard MSP objects are efficient).
-
-### Phase 2: The Visualizer Block (`tv.viz`)
-
-  * Re-implement `jit.poke~` purely for visualization (using the MS-Flux map).
-  * Write the `jit.gl.pix` shader containing Rotate/Zoom/Scroll.
-
-### Phase 3: The Integration (`tv.main`)
-
-  * Map the knobs.
-  * Ensure that `Zoom = 0.5` visibly zooms out and audibly drops an octave simultaneously.
+1. **Audio Quality:** 100% MSP 64-bit float. No interpolation noise from video processing.
+2. **Safety:** GPU crashes do not kill the audio stream.
+3. **Flexibility:** Visual effects can be exaggerated without destroying audio.
+4. **M4L Stability:** Removes the complex "matrix-to-signal" dependency.
+5. **CPU Efficiency:** Standard MSP objects are more efficient than jit.peek~/poke~ round-trips.
 
 -----
 
-## VIII. Advantages of v7 Architecture
+## Appendix I. M4L Object Compatibility (IMPORTANT)
 
-1.  **Audio Quality:** 100% MSP 64-bit float. No interpolation noise.
-2.  **Safety:** Visual crashes (GPU context loss) do not kill the audio stream.
-3.  **Flexibility:** We can exaggerate visuals (e.g., 360° rotation) without destroying audio intelligibility (limiting shift to 1kHz).
-4.  **M4L Stability:** Removes the complex "matrix-to-signal" dependency that plagues Ableton Live.
+### Objects NOT Available in M4L
+These objects caused "No such object" errors:
+- `gigaverb~` - Use tapin~/tapout~ instead
+- `freeverb~` - Use tapin~/tapout~ instead
+- `vdelay~` - Use buffer~/poke~/index~ circular buffer instead
+- `wrap~` - Use `%~` (modulo) instead
+- `yafr2` - Has internal `clip` objects that don't understand signals
+
+### Objects Confirmed Working in M4L
+- `buffer~`, `poke~`, `index~` - Circular buffer operations
+- `tapin~`, `tapout~` - Fixed delay lines (message-rate delay time)
+- `phasor~`, `scale~`, `-~`, `+~`, `*~`, `!-~`, `%~` - Basic DSP math
+- `freqshift~` - Bode frequency shifter
+- `line~` - Signal interpolation
+- `r`, `s` - Receive/send with `---` prefix for M4L scoping
 
 -----
 
-## Appendix I. Current tv.audio.maxpat Architecture
+## Appendix II. Current tv.audio.maxpat Architecture
 
 The working audio engine uses a 4-stage serial processing chain:
 
@@ -231,7 +232,7 @@ Output L/R
 
 -----
 
-## Appendix II. Current tv.fx.maxpat Architecture
+## Appendix III. Current tv.fx.maxpat Architecture
 
 The working visualization engine uses a 5-stage processing chain:
 

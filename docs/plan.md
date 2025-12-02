@@ -185,38 +185,10 @@ GPU shader for visual effects - scroll, warp, smear, edge detection.
 
 -----
 
-## 6. Critical M4L Rules (Unchanged)
+## 6. Critical M4L Rules
 
 * **Naming:** Always use `---` prefix for named objects (e.g., `---tv_audio_ring`)
 * **Types:** Always use `float32` for matrices and buffers
 * **Threading:** Audio engine runs in MSP scheduler, visual in low-priority
 
 -----
-
-## 7. M4L Object Compatibility (IMPORTANT)
-
-### Objects NOT Available in M4L
-These objects caused "No such object" errors:
-- `gigaverb~` - Use tapin~/tapout~ instead
-- `freeverb~` - Use tapin~/tapout~ instead
-- `vdelay~` - Use buffer~/poke~/index~ circular buffer instead
-- `wrap~` - Use `%~` (modulo) instead
-- `yafr2` - Has internal `clip` objects that don't understand signals
-
-### Objects Confirmed Working in M4L
-- `buffer~`, `poke~`, `index~` - Circular buffer operations
-- `tapin~`, `tapout~` - Fixed delay lines (message-rate delay time)
-- `phasor~`, `scale~`, `-~`, `+~`, `*~`, `!-~`, `%~` - Basic DSP math
-- `freqshift~` - Bode frequency shifter
-- `line~` - Signal interpolation
-- `r`, `s` - Receive/send with `---` prefix for M4L scoping
-
------
-
-## 8. Advantages of v7 Architecture
-
-1. **Audio Quality:** 100% MSP 64-bit float. No interpolation noise from video processing.
-2. **Safety:** GPU crashes do not kill the audio stream.
-3. **Flexibility:** Visual effects can be exaggerated without destroying audio.
-4. **M4L Stability:** Removes the complex "matrix-to-signal" dependency.
-5. **CPU Efficiency:** Standard MSP objects are more efficient than jit.peek~/poke~ round-trips.
