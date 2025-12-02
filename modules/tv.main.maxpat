@@ -30,7 +30,7 @@
 		"boxanimatetime" : 200,
 		"enablehscroll" : 1,
 		"enablevscroll" : 1,
-		"devicewidth" : 300.0,
+		"devicewidth" : 360.0,
 		"description" : "Teevee",
 		"digest" : "Parallel audio (MSP) and video (Jitter) processing",
 		"tags" : "audio video jitter m4l feedback twin-engine",
@@ -206,7 +206,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 700.0, 100.0, 44.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 10.0, 80.0, 44.0, 48.0 ],
+					"presentation_rect" : [ 5.0, 5.0, 44.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Scroll",
@@ -232,7 +232,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 760.0, 100.0, 44.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 60.0, 80.0, 44.0, 48.0 ],
+					"presentation_rect" : [ 50.0, 5.0, 44.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Zoom",
@@ -258,7 +258,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 820.0, 100.0, 44.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 110.0, 80.0, 44.0, 48.0 ],
+					"presentation_rect" : [ 5.0, 60.0, 44.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Rotate",
@@ -284,7 +284,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 880.0, 100.0, 44.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 160.0, 80.0, 44.0, 48.0 ],
+					"presentation_rect" : [ 50.0, 60.0, 44.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Smear",
@@ -302,30 +302,6 @@
 			},
 			{
 				"box" : {
-					"id" : "obj-dial-freeze",
-					"maxclass" : "live.toggle",
-					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"parameter_enable" : 1,
-					"patching_rect" : [ 940.0, 100.0, 24.0, 24.0 ],
-					"presentation" : 1,
-					"presentation_rect" : [ 260.0, 92.0, 24.0, 24.0 ],
-					"saved_attribute_attributes" : {
-						"valueof" : {
-							"parameter_longname" : "Freeze",
-							"parameter_shortname" : "Freeze",
-							"parameter_type" : 2,
-							"parameter_mmax" : 1.0,
-							"parameter_initial" : [ 0 ],
-							"parameter_initial_enable" : 1
-						}
-					},
-					"varname" : "freeze"
-				}
-			},
-			{
-				"box" : {
 					"id" : "obj-dial-scrub",
 					"maxclass" : "live.dial",
 					"numinlets" : 1,
@@ -334,7 +310,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 1000.0, 100.0, 44.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 210.0, 80.0, 44.0, 48.0 ],
+					"presentation_rect" : [ 5.0, 115.0, 44.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Scrub",
@@ -348,6 +324,30 @@
 						}
 					},
 					"varname" : "scrub"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-dial-freeze",
+					"maxclass" : "live.toggle",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"parameter_enable" : 1,
+					"patching_rect" : [ 940.0, 100.0, 24.0, 24.0 ],
+					"presentation" : 1,
+					"presentation_rect" : [ 55.0, 125.0, 24.0, 24.0 ],
+					"saved_attribute_attributes" : {
+						"valueof" : {
+							"parameter_longname" : "Freeze",
+							"parameter_shortname" : "Freeze",
+							"parameter_type" : 2,
+							"parameter_mmax" : 1.0,
+							"parameter_initial" : [ 0 ],
+							"parameter_initial_enable" : 1
+						}
+					},
+					"varname" : "freeze"
 				}
 			},
 			{
@@ -452,41 +452,13 @@
 			},
 			{
 				"box" : {
-					"fontface" : 1,
-					"fontsize" : 18.0,
-					"id" : "obj-title",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 700.0, 500.0, 100.0, 27.0 ],
-					"presentation" : 1,
-					"presentation_rect" : [ 10.0, 10.0, 100.0, 27.0 ],
-					"text" : "TEEVEE",
-					"textcolor" : [ 1.0, 1.0, 1.0, 1.0 ]
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-version",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 700.0, 530.0, 100.0, 20.0 ],
-					"presentation" : 1,
-					"presentation_rect" : [ 10.0, 38.0, 100.0, 20.0 ],
-					"text" : "v7.0 Twin Engine",
-					"textcolor" : [ 0.7, 0.7, 0.7, 1.0 ]
-				}
-			},
-			{
-				"box" : {
 					"id" : "obj-label-freeze",
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 940.0, 130.0, 50.0, 20.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 255.0, 116.0, 35.0, 20.0 ],
+					"presentation_rect" : [ 77.0, 127.0, 25.0, 20.0 ],
 					"text" : "Frz",
 					"textcolor" : [ 0.7, 0.7, 0.7, 1.0 ]
 				}
@@ -500,7 +472,7 @@
 					"outlettype" : [ "jit_matrix", "" ],
 					"patching_rect" : [ 450.0, 550.0, 192.0, 192.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 295.0, 6.0, 128.0, 128.0 ]
+					"presentation_rect" : [ 105.0, 5.0, 159.0, 159.0 ]
 				}
 			},
 			{
@@ -513,7 +485,7 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 700.0, 560.0, 100.0, 30.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 0.0, 0.0, 430.0, 140.0 ]
+					"presentation_rect" : [ 0.0, 0.0, 269.0, 169.0 ]
 				}
 			}
 		],
