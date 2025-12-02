@@ -206,7 +206,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 700.0, 100.0, 44.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 5.0, 5.0, 44.0, 48.0 ],
+					"presentation_rect" : [ 170.0, 5.0, 44.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Scroll",
@@ -232,7 +232,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 760.0, 100.0, 44.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 50.0, 5.0, 44.0, 48.0 ],
+					"presentation_rect" : [ 215.0, 5.0, 44.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Zoom",
@@ -258,7 +258,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 820.0, 100.0, 44.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 5.0, 60.0, 44.0, 48.0 ],
+					"presentation_rect" : [ 170.0, 60.0, 44.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Rotate",
@@ -284,7 +284,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 880.0, 100.0, 44.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 50.0, 60.0, 44.0, 48.0 ],
+					"presentation_rect" : [ 215.0, 60.0, 44.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Smear",
@@ -310,7 +310,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 1000.0, 100.0, 44.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 5.0, 115.0, 44.0, 48.0 ],
+					"presentation_rect" : [ 170.0, 115.0, 44.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Scrub",
@@ -336,7 +336,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 940.0, 100.0, 24.0, 24.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 55.0, 125.0, 24.0, 24.0 ],
+					"presentation_rect" : [ 225.0, 120.0, 24.0, 24.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Freeze",
@@ -458,8 +458,8 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 940.0, 130.0, 50.0, 20.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 77.0, 127.0, 25.0, 20.0 ],
-					"text" : "Frz",
+					"presentation_rect" : [ 220.0, 144.0, 35.0, 20.0 ],
+					"text" : "Freeze",
 					"textcolor" : [ 0.7, 0.7, 0.7, 1.0 ]
 				}
 			},
@@ -472,7 +472,7 @@
 					"outlettype" : [ "jit_matrix", "" ],
 					"patching_rect" : [ 450.0, 550.0, 192.0, 192.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 105.0, 5.0, 159.0, 159.0 ]
+					"presentation_rect" : [ 5.0, 5.0, 159.0, 159.0 ]
 				}
 			},
 			{
