@@ -164,6 +164,80 @@ void main() {
 
 -----
 
+## VIII. Module Reference
+
+### Directory Structure
+
+```text
+Teevee_Project/
+├── teevee.amxd             (The Shell: Host device, parameters, and routing)
+├── modules/
+│   ├── tv.main.maxpat      (The Router: Connects both engines)
+│   ├── tv.audio.maxpat     (PATH A: MSP audio engine)
+│   ├── tv.sync.maxpat      (The Clock: Master timing)
+│   ├── tv.ingest.maxpat    (PATH B: Audio features → Viz matrix)
+│   ├── tv.viz.maxpat       (PATH B: Display)
+│   ├── tv.param.maxpat     (The Hub: Dual-path parameter distribution)
+│   └── tv.egress.maxpat    (DEPRECATED - kept for reference)
+└── code/
+    ├── tv.encode.gendsp    (Viz only: L/R → features for display)
+    └── tv.core.genjit      (Video Gen: Scroll, Warp, Smear, Edge)
+```
+
+### Module Descriptions
+
+| Module | Purpose |
+|:-------|:--------|
+| **tv.main.maxpat** | Routes audio through Path A (tv.audio → plugout~) and visual through Path B (tv.ingest → tv.viz) |
+| **tv.audio.maxpat** | Hi-Def Audio Engine - pure MSP processing with delay, varispeed, freqshift, reverb |
+| **tv.sync.maxpat** | Master clock/index generation for both paths |
+| **tv.ingest.maxpat** | Writes audio features to visualization-only matrix (---tv_viz_ram) |
+| **tv.viz.maxpat** | Display rendering |
+| **tv.param.maxpat** | Dual-path parameter distribution hub - routes controls to both engines |
+| **tv.egress.maxpat** | DEPRECATED - Old v6 matrix-to-audio reader, kept for reference only |
+
+-----
+
+## IX. Parameter Reference (v7.1)
+
+### Input Parameter Ranges (UI Dials: 0-1)
+
+All parameters arrive at `tv.param.maxpat` as normalized 0-1 values from the UI.
+
+### Audio Engine Scaling (tv.audio.maxpat)
+
+| Parameter | Input | Scaled Output | MSP Object | Notes |
+|:----------|:------|:--------------|:-----------|:------|
+| **Scroll** | 0-1 | 0-1000 ms | `scale~ 0. 1000. 0 44100` → delay offset | Maps to ~1 second max delay |
+| **Zoom** | 0-1 | 0.5-2.0× speed | `*~ 86.` → `phasor~` | 0.5 = octave down, 2.0 = octave up |
+| **Rotate** | 0-1 | -500 to +500 Hz | `freqshift~` | Bode frequency shifter |
+| **Smear** | 0-1 | 0-1 wet/dry | `*~` crossfade | 0 = dry, 1 = full reverb |
+| **Freeze** | 0/1 | 0/1 gate | `*~` gates input | Stops buffer writing when frozen |
+
+### Visual Engine Scaling (tv.core.genjit)
+
+| Parameter | Input | Scaled Output | Shader Param | Notes |
+|:----------|:------|:--------------|:-------------|:------|
+| **Scroll** | 0-1 | 0-1 | `scroll_speed` | Y-axis pan velocity |
+| **Zoom** | 0-1 | 0.5-2.0 | `zoom` | UV scaling (0.25-4.0 supported) |
+| **Rotate** | 0-1 | -π to +π rad | `rotation` | 2D rotation in radians |
+| **Smear** | 0-1 | 0-0.95 | `smear` | Frame feedback (capped to prevent infinite) |
+| **Edge** | 0-1 | 0-1 | `edge_amount` | Sobel edge detection mix |
+| **Warp X/Y** | 0-1 | -1 to +1 | `warp_x`, `warp_y` | Barrel/pincushion distortion |
+
+### Freeze Behavior
+
+**Audio (tv.audio.maxpat):**
+- Freeze = 1: Input signal is gated (`*~ 0`), buffer stops recording
+- Delay buffer continues looping existing content
+- All other processing (zoom, rotate, smear) still applies
+
+**Visual (tv.core.genjit):**
+- Freeze stops matrix updates in tv.ingest
+- Existing frame continues to be processed with feedback effects
+
+-----
+
 ## Appendix I. M4L Object Compatibility (IMPORTANT)
 
 ### Objects NOT Available in M4L
