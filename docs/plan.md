@@ -170,11 +170,11 @@ GPU shader for visual effects - scroll, warp, smear, edge detection.
 - [x] Update `tv.param.maxpat` for dual-path routing
 - [x] Test audio passthrough - WORKING (zoom, rotate, scroll, smear all functional)
 
-### Phase 3: Visualization Path
+### Phase 3: Visualization Path ✅
 - [x] Update `tv.ingest.maxpat` to write to visualization-only matrix (`---tv_viz_ram`)
 - [x] Fix `tv.fx.maxpat` matrix name mismatch (reads `tv_ram`, should read `---tv_viz_ram`)
-- [ ] Ensure tv.fx shader parameters match audio parameters
-- [ ] Verify visual feedback loop works independently
+- [x] Ensure tv.fx shader parameters match audio parameters
+- [x] Verify visual feedback loop works independently
 
 ### Phase 4: Polish
 - [ ] Test all parameter ranges for audio/visual sync
@@ -220,51 +220,3 @@ These objects caused "No such object" errors:
 3. **Flexibility:** Visual effects can be exaggerated without destroying audio.
 4. **M4L Stability:** Removes the complex "matrix-to-signal" dependency.
 5. **CPU Efficiency:** Standard MSP objects are more efficient than jit.peek~/poke~ round-trips.
-
------
-
-## 9. Current tv.audio.maxpat Architecture
-
-The working audio engine uses a 4-stage serial processing chain:
-
-```
-Input L/R
-    ↓
-┌─────────────────────────────────────────────────────────┐
-│ STAGE 1: DELAY (SCROLL)                                 │
-│ buffer~ ---tv_delay_l/r → poke~ (write)                 │
-│ phasor~ 0.5 → scale~ → write index                      │
-│ write_idx - scroll_offset → %~ 88200 → index~ (read)    │
-│ Scroll param (0-1000ms) controls delay offset           │
-└─────────────────────────────────────────────────────────┘
-    ↓
-┌─────────────────────────────────────────────────────────┐
-│ STAGE 2: VARISPEED (ZOOM)                               │
-│ buffer~ ---tv_pitch_l/r → poke~ (write at fixed rate)   │
-│ phasor~ 86 → scale~ → write index                       │
-│ zoom * 86 → phasor~ → scale~ → index~ (read)            │
-│ Zoom param (0.5-2.0) controls playback speed/pitch      │
-└─────────────────────────────────────────────────────────┘
-    ↓
-┌─────────────────────────────────────────────────────────┐
-│ STAGE 3: FREQ SHIFT (ROTATE)                            │
-│ freqshift~ with shift amount from rotate param          │
-│ Rotate param (-500 to +500 Hz) controls shift           │
-└─────────────────────────────────────────────────────────┘
-    ↓
-┌─────────────────────────────────────────────────────────┐
-│ STAGE 4: REVERB (SMEAR)                                 │
-│ tapin~ 1000 → tapout~ 29 67 / 37 79 → *~ 0.4 (feedback) │
-│ Dry/wet crossfade: dry * (1-smear) + wet * smear        │
-│ Smear param (0-1) controls wet/dry mix                  │
-└─────────────────────────────────────────────────────────┘
-    ↓
-Output L/R
-```
-
-### Parameter Receives
-- `r ---tv_audio_scroll` → delay offset (0-1000ms)
-- `r ---tv_audio_zoom` → playback speed (0.5-2.0)
-- `r ---tv_audio_rotate` → freq shift (-500 to +500 Hz)
-- `r ---tv_audio_smear` → reverb wet/dry (0-1)
-- `r ---tv_audio_freeze` → (not yet implemented)

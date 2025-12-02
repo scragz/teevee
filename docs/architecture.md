@@ -180,3 +180,118 @@ void main() {
 2.  **Safety:** Visual crashes (GPU context loss) do not kill the audio stream.
 3.  **Flexibility:** We can exaggerate visuals (e.g., 360° rotation) without destroying audio intelligibility (limiting shift to 1kHz).
 4.  **M4L Stability:** Removes the complex "matrix-to-signal" dependency that plagues Ableton Live.
+
+-----
+
+## Appendix I. Current tv.audio.maxpat Architecture
+
+The working audio engine uses a 4-stage serial processing chain:
+
+```
+Input L/R
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ STAGE 1: DELAY (SCROLL)                                 │
+│ buffer~ ---tv_delay_l/r → poke~ (write)                 │
+│ phasor~ 0.5 → scale~ → write index                      │
+│ write_idx - scroll_offset → %~ 88200 → index~ (read)    │
+│ Scroll param (0-1000ms) controls delay offset           │
+└─────────────────────────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ STAGE 2: VARISPEED (ZOOM)                               │
+│ buffer~ ---tv_pitch_l/r → poke~ (write at fixed rate)   │
+│ phasor~ 86 → scale~ → write index                       │
+│ zoom * 86 → phasor~ → scale~ → index~ (read)            │
+│ Zoom param (0.5-2.0) controls playback speed/pitch      │
+└─────────────────────────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ STAGE 3: FREQ SHIFT (ROTATE)                            │
+│ freqshift~ with shift amount from rotate param          │
+│ Rotate param (-500 to +500 Hz) controls shift           │
+└─────────────────────────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ STAGE 4: REVERB (SMEAR)                                 │
+│ tapin~ 1000 → tapout~ 29 67 / 37 79 → *~ 0.4 (feedback) │
+│ Dry/wet crossfade: dry * (1-smear) + wet * smear        │
+│ Smear param (0-1) controls wet/dry mix                  │
+└─────────────────────────────────────────────────────────┘
+    ↓
+Output L/R
+```
+
+### Parameter Receives
+- `r ---tv_audio_scroll` → delay offset (0-1000ms)
+- `r ---tv_audio_zoom` → playback speed (0.5-2.0)
+- `r ---tv_audio_rotate` → freq shift (-500 to +500 Hz)
+- `r ---tv_audio_smear` → reverb wet/dry (0-1)
+- `r ---tv_audio_freeze` → (not yet implemented)
+
+-----
+
+## Appendix II. Current tv.fx.maxpat Architecture
+
+The working visualization engine uses a 5-stage processing chain:
+
+```
+Bang (frame trigger from tv.sync)
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ TRIGGER: t b b b b b b                                  │
+│ Bangs all parameter stores and matrix reads each frame  │
+└─────────────────────────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ PARAM STORAGE (float objects)                           │
+│ r ---tv_param_scroll → float → scale 0-1 to -128..128   │
+│ r ---tv_param_zoom → float → scale 0-1 to 0.5..2.0      │
+│ r ---tv_param_rotation → float → scale 0-1 to -180..180 │
+│ r ---tv_param_smear → float (0-0.95 feedback amount)    │
+│ Values stored on receive, output on frame bang          │
+└─────────────────────────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ STAGE 1: READ 1D MATRIX                                 │
+│ jit.matrix ---tv_viz_ram 4 float32 65536                │
+│ Reads audio features written by tv.ingest               │
+└─────────────────────────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ STAGE 2: RESHAPE TO 2D                                  │
+│ jit.matrix 4 float32 256 256 @adapt 0                   │
+│ Converts 1D buffer to 2D image for display              │
+└─────────────────────────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ STAGE 3: TRANSFORM (jit.rota @boundmode 4)              │
+│ offset_y ← scroll (vertical pan)                        │
+│ zoom_x, zoom_y ← zoom (UV scaling)                      │
+│ theta ← rotation (2D rotation in degrees)               │
+└─────────────────────────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ STAGE 4: SMEAR (feedback blend)                         │
+│ new_frame * (1 - smear) + prev_frame * smear            │
+│ jit.matrix ---tv_viz_ram_out stores previous frame      │
+│ jit.op @op * scales each, jit.op @op + combines         │
+└─────────────────────────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ STAGE 5: COLORIZE (jit.gen)                             │
+│ ARGB planes → RGB display with boost and cross-mod      │
+│ Alpha (plane 0): amplitude × 3                          │
+│ Red (plane 1): waveform × 5 + green × 0.3               │
+│ Green (plane 2): flux × 10 (boosted, small values)      │
+│ Blue (plane 3): stereo × 5 + alpha × 0.5                │
+└─────────────────────────────────────────────────────────┘
+    ↓
+Outlet → tv.viz for display
+```
+
+### Parameter Receives
+- `r ---tv_param_scroll` → offset_y for jit.rota (0-1 → -128..128 pixels)
+- `r ---tv_param_zoom` → zoom_x/zoom_y for jit.rota (0-1 → 0.5..2.0)
+- `r ---tv_param_rotation` → theta for jit.rota (0-1 → -180..180 degrees)
+- `r ---tv_param_smear` → feedback blend amount (0-0.95)
