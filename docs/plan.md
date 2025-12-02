@@ -162,7 +162,7 @@ GPU shader for visual effects - scroll, warp, smear, edge detection.
 - [x] Implement varispeed playback with zoom parameter (buffer~/phasor~/index~)
 - [x] Add freqshift~ for rotation
 - [x] Add tapin~/tapout~ multi-tap reverb for smear (wet/dry crossfade)
-- [ ] Add freeze (buffer loop) functionality - deferred
+- [x] Add freeze (buffer loop) functionality
 
 ### Phase 2: Twin Engine Integration ✅
 - [x] Update `tv.main.maxpat` to route audio through tv.audio
@@ -176,12 +176,12 @@ GPU shader for visual effects - scroll, warp, smear, edge detection.
 - [x] Ensure tv.fx shader parameters match audio parameters
 - [x] Verify visual feedback loop works independently
 
-### Phase 4: Polish
-- [ ] Test all parameter ranges for audio/visual sync
-- [ ] Optimize CPU usage (MSP objects are efficient)
-- [ ] Add freeze mode with visual bloom/sort
-- [ ] Document parameter ranges and mappings
-- [ ] Deprecate tv.egress.maxpat formally
+### Phase 4: Polish ✅
+- [x] Test all parameter ranges for audio/visual sync
+- [x] Optimize CPU usage (MSP objects are efficient)
+- [x] Add freeze mode with visual bloom/sort
+- [x] Document parameter ranges and mappings
+- [x] Deprecate tv.egress.maxpat formally
 
 -----
 
@@ -192,3 +192,44 @@ GPU shader for visual effects - scroll, warp, smear, edge detection.
 * **Threading:** Audio engine runs in MSP scheduler, visual in low-priority
 
 -----
+
+## 7. Parameter Reference (v7.1)
+
+### Input Parameter Ranges (UI Dials: 0-1)
+
+All parameters arrive at `tv.param.maxpat` as normalized 0-1 values from the UI.
+
+### Audio Engine Scaling (tv.audio.maxpat)
+
+| Parameter | Input | Scaled Output | MSP Object | Notes |
+|:----------|:------|:--------------|:-----------|:------|
+| **Scroll** | 0-1 | 0-1000 ms | `scale~ 0. 1000. 0 44100` → delay offset | Maps to ~1 second max delay |
+| **Zoom** | 0-1 | 0.5-2.0× speed | `*~ 86.` → `phasor~` | 0.5 = octave down, 2.0 = octave up |
+| **Rotate** | 0-1 | -500 to +500 Hz | `freqshift~` | Bode frequency shifter |
+| **Smear** | 0-1 | 0-1 wet/dry | `*~` crossfade | 0 = dry, 1 = full reverb |
+| **Freeze** | 0/1 | 0/1 gate | `*~` gates input | Stops buffer writing when frozen |
+
+### Visual Engine Scaling (tv.fx / tv.core.genjit)
+
+| Parameter | Input | Scaled Output | Shader Param | Notes |
+|:----------|:------|:--------------|:-------------|:------|
+| **Scroll** | 0-1 | 0-1 | `scroll_speed` | Y-axis pan velocity |
+| **Zoom** | 0-1 | 0.5-2.0 | `zoom` | UV scaling (0.25-4.0 supported) |
+| **Rotate** | 0-1 | -π to +π rad | `rotation` | 2D rotation in radians |
+| **Smear** | 0-1 | 0-0.95 | `smear` | Frame feedback (capped to prevent infinite) |
+| **Edge** | 0-1 | 0-1 | `edge_amount` | Sobel edge detection mix |
+| **Warp X/Y** | 0-1 | -1 to +1 | `warp_x`, `warp_y` | Barrel/pincushion distortion |
+
+### Freeze Behavior
+
+**Audio (tv.audio.maxpat):**
+- Freeze = 1: Input signal is gated (`*~ 0`), buffer stops recording
+- Delay buffer continues looping existing content
+- All other processing (zoom, rotate, smear) still applies
+
+**Visual (tv.core.genjit):**
+- Freeze stops matrix updates in tv.ingest
+- Existing frame continues to be processed with feedback effects
+
+-----
+

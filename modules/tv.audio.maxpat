@@ -9,7 +9,7 @@
 			"modernui" : 1
 		},
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 1200.0, 800.0 ],
+		"rect" : [ 100.0, 100.0, 1200.0, 850.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -31,7 +31,7 @@
 		"enablehscroll" : 1,
 		"enablevscroll" : 1,
 		"devicewidth" : 0.0,
-		"description" : "tv.audio - Hi-Def Audio Engine (Path A)",
+		"description" : "tv.audio v7.1 - Hi-Def Audio Engine with Freeze (Path A)",
 		"digest" : "Pure MSP audio processing with delay, pitch, freqshift, reverb, freeze",
 		"tags" : "teevee, audio, dsp, delay, pitch, freqshift, reverb, freeze",
 		"style" : "",
@@ -70,7 +70,7 @@
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 730.0, 30.0, 30.0 ]
+					"patching_rect" : [ 50.0, 780.0, 30.0, 30.0 ]
 				}
 			},
 			{
@@ -81,7 +81,7 @@
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 150.0, 730.0, 30.0, 30.0 ]
+					"patching_rect" : [ 150.0, 780.0, 30.0, 30.0 ]
 				}
 			},
 			{
@@ -90,8 +90,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 800.0, 30.0, 350.0, 20.0 ],
-					"text" : "tv.audio v7 - Hi-Def Audio Engine (Path A)"
+					"patching_rect" : [ 850.0, 30.0, 350.0, 20.0 ],
+					"text" : "tv.audio v7.1 - Hi-Def Audio Engine with Freeze (Path A)"
 				}
 			},
 			{
@@ -200,8 +200,19 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "bang" ],
-					"patching_rect" : [ 800.0, 130.0, 60.0, 22.0 ],
-					"text" : "line~ 0 20"
+					"patching_rect" : [ 800.0, 130.0, 65.0, 22.0 ],
+					"text" : "line~ 0 50"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-freeze-inv",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 800.0, 160.0, 45.0, 22.0 ],
+					"text" : "!-~ 1."
 				}
 			},
 			{
@@ -238,11 +249,33 @@
 			},
 			{
 				"box" : {
+					"id" : "obj-freeze-gate-l",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 50.0, 140.0, 30.0, 22.0 ],
+					"text" : "*~"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-freeze-gate-r",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 150.0, 140.0, 30.0, 22.0 ],
+					"text" : "*~"
+				}
+			},
+			{
+				"box" : {
 					"id" : "obj-delay-poke-l",
 					"maxclass" : "newobj",
 					"numinlets" : 3,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 170.0, 115.0, 22.0 ],
+					"patching_rect" : [ 50.0, 200.0, 115.0, 22.0 ],
 					"text" : "poke~ ---tv_delay_l"
 				}
 			},
@@ -252,7 +285,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 3,
 					"numoutlets" : 0,
-					"patching_rect" : [ 150.0, 170.0, 120.0, 22.0 ],
+					"patching_rect" : [ 150.0, 200.0, 120.0, 22.0 ],
 					"text" : "poke~ ---tv_delay_r"
 				}
 			},
@@ -296,7 +329,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 300.0, 200.0, 30.0, 22.0 ],
+					"patching_rect" : [ 300.0, 230.0, 30.0, 22.0 ],
 					"text" : "-~"
 				}
 			},
@@ -307,7 +340,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 300.0, 230.0, 70.0, 22.0 ],
+					"patching_rect" : [ 300.0, 260.0, 70.0, 22.0 ],
 					"text" : "%~ 88200"
 				}
 			},
@@ -318,7 +351,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 260.0, 115.0, 22.0 ],
+					"patching_rect" : [ 50.0, 290.0, 115.0, 22.0 ],
 					"text" : "index~ ---tv_delay_l"
 				}
 			},
@@ -329,7 +362,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 150.0, 260.0, 120.0, 22.0 ],
+					"patching_rect" : [ 150.0, 290.0, 120.0, 22.0 ],
 					"text" : "index~ ---tv_delay_r"
 				}
 			},
@@ -339,7 +372,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 300.0, 220.0, 20.0 ],
+					"patching_rect" : [ 50.0, 330.0, 220.0, 20.0 ],
 					"text" : "=== STAGE 2: VARISPEED (ZOOM) ==="
 				}
 			},
@@ -350,7 +383,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "float", "bang" ],
-					"patching_rect" : [ 50.0, 330.0, 170.0, 22.0 ],
+					"patching_rect" : [ 50.0, 360.0, 170.0, 22.0 ],
 					"text" : "buffer~ ---tv_pitch_l 500 1"
 				}
 			},
@@ -361,7 +394,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "float", "bang" ],
-					"patching_rect" : [ 250.0, 330.0, 170.0, 22.0 ],
+					"patching_rect" : [ 250.0, 360.0, 170.0, 22.0 ],
 					"text" : "buffer~ ---tv_pitch_r 500 1"
 				}
 			},
@@ -371,7 +404,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 3,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 390.0, 105.0, 22.0 ],
+					"patching_rect" : [ 50.0, 420.0, 105.0, 22.0 ],
 					"text" : "poke~ ---tv_pitch_l"
 				}
 			},
@@ -381,7 +414,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 3,
 					"numoutlets" : 0,
-					"patching_rect" : [ 150.0, 390.0, 110.0, 22.0 ],
+					"patching_rect" : [ 150.0, 420.0, 110.0, 22.0 ],
 					"text" : "poke~ ---tv_pitch_r"
 				}
 			},
@@ -392,7 +425,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 350.0, 360.0, 70.0, 22.0 ],
+					"patching_rect" : [ 350.0, 390.0, 70.0, 22.0 ],
 					"text" : "phasor~ 86"
 				}
 			},
@@ -403,7 +436,7 @@
 					"numinlets" : 6,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 350.0, 390.0, 125.0, 22.0 ],
+					"patching_rect" : [ 350.0, 420.0, 125.0, 22.0 ],
 					"text" : "scale~ 0. 1. 0 22050"
 				}
 			},
@@ -414,7 +447,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 350.0, 440.0, 56.0, 22.0 ],
+					"patching_rect" : [ 350.0, 470.0, 56.0, 22.0 ],
 					"text" : "phasor~"
 				}
 			},
@@ -436,7 +469,7 @@
 					"numinlets" : 6,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 350.0, 470.0, 125.0, 22.0 ],
+					"patching_rect" : [ 350.0, 500.0, 125.0, 22.0 ],
 					"text" : "scale~ 0. 1. 0 22050"
 				}
 			},
@@ -447,7 +480,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 500.0, 105.0, 22.0 ],
+					"patching_rect" : [ 50.0, 530.0, 105.0, 22.0 ],
 					"text" : "index~ ---tv_pitch_l"
 				}
 			},
@@ -458,7 +491,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 150.0, 500.0, 110.0, 22.0 ],
+					"patching_rect" : [ 150.0, 530.0, 110.0, 22.0 ],
 					"text" : "index~ ---tv_pitch_r"
 				}
 			},
@@ -468,7 +501,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 540.0, 240.0, 20.0 ],
+					"patching_rect" : [ 50.0, 570.0, 240.0, 20.0 ],
 					"text" : "=== STAGE 3: FREQ SHIFT (ROTATE) ==="
 				}
 			},
@@ -479,7 +512,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "signal" ],
-					"patching_rect" : [ 50.0, 570.0, 70.0, 22.0 ],
+					"patching_rect" : [ 50.0, 600.0, 70.0, 22.0 ],
 					"text" : "freqshift~"
 				}
 			},
@@ -490,7 +523,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "signal" ],
-					"patching_rect" : [ 150.0, 570.0, 70.0, 22.0 ],
+					"patching_rect" : [ 150.0, 600.0, 70.0, 22.0 ],
 					"text" : "freqshift~"
 				}
 			},
@@ -500,7 +533,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 600.0, 200.0, 20.0 ],
+					"patching_rect" : [ 50.0, 640.0, 200.0, 20.0 ],
 					"text" : "=== STAGE 4: REVERB (SMEAR) ==="
 				}
 			},
@@ -511,7 +544,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "tapconnect" ],
-					"patching_rect" : [ 300.0, 620.0, 80.0, 22.0 ],
+					"patching_rect" : [ 300.0, 660.0, 80.0, 22.0 ],
 					"text" : "tapin~ 1000"
 				}
 			},
@@ -522,7 +555,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "tapconnect" ],
-					"patching_rect" : [ 400.0, 620.0, 80.0, 22.0 ],
+					"patching_rect" : [ 400.0, 660.0, 80.0, 22.0 ],
 					"text" : "tapin~ 1000"
 				}
 			},
@@ -533,7 +566,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 300.0, 650.0, 85.0, 22.0 ],
+					"patching_rect" : [ 300.0, 690.0, 85.0, 22.0 ],
 					"text" : "tapout~ 29 67"
 				}
 			},
@@ -544,7 +577,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 400.0, 650.0, 85.0, 22.0 ],
+					"patching_rect" : [ 400.0, 690.0, 85.0, 22.0 ],
 					"text" : "tapout~ 37 79"
 				}
 			},
@@ -555,7 +588,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 300.0, 680.0, 50.0, 22.0 ],
+					"patching_rect" : [ 300.0, 720.0, 50.0, 22.0 ],
 					"text" : "*~ 0.4"
 				}
 			},
@@ -566,7 +599,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 400.0, 680.0, 50.0, 22.0 ],
+					"patching_rect" : [ 400.0, 720.0, 50.0, 22.0 ],
 					"text" : "*~ 0.4"
 				}
 			},
@@ -577,7 +610,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 650.0, 30.0, 22.0 ],
+					"patching_rect" : [ 50.0, 690.0, 30.0, 22.0 ],
 					"text" : "*~"
 				}
 			},
@@ -588,7 +621,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 150.0, 650.0, 30.0, 22.0 ],
+					"patching_rect" : [ 150.0, 690.0, 30.0, 22.0 ],
 					"text" : "*~"
 				}
 			},
@@ -599,7 +632,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 680.0, 30.0, 22.0 ],
+					"patching_rect" : [ 50.0, 720.0, 30.0, 22.0 ],
 					"text" : "*~"
 				}
 			},
@@ -610,7 +643,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 150.0, 680.0, 30.0, 22.0 ],
+					"patching_rect" : [ 150.0, 720.0, 30.0, 22.0 ],
 					"text" : "*~"
 				}
 			},
@@ -621,7 +654,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 700.0, 620.0, 45.0, 22.0 ],
+					"patching_rect" : [ 700.0, 660.0, 45.0, 22.0 ],
 					"text" : "!-~ 1."
 				}
 			},
@@ -632,7 +665,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 700.0, 30.0, 22.0 ],
+					"patching_rect" : [ 50.0, 750.0, 30.0, 22.0 ],
 					"text" : "+~"
 				}
 			},
@@ -643,21 +676,31 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 150.0, 700.0, 30.0, 22.0 ],
+					"patching_rect" : [ 150.0, 750.0, 30.0, 22.0 ],
 					"text" : "+~"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-freeze-label",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 870.0, 130.0, 150.0, 20.0 ],
+					"text" : "Freeze: gates input to buffers"
 				}
 			}
 		],
 		"lines" : [
 			{
 				"patchline" : {
-					"destination" : [ "obj-delay-poke-l", 0 ],
+					"destination" : [ "obj-freeze-gate-l", 0 ],
 					"source" : [ "obj-in-l", 0 ]
 				}
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-delay-poke-r", 0 ],
+					"destination" : [ "obj-freeze-gate-r", 0 ],
 					"source" : [ "obj-in-r", 0 ]
 				}
 			},
@@ -689,6 +732,38 @@
 				"patchline" : {
 					"destination" : [ "obj-freeze-line", 0 ],
 					"source" : [ "obj-r-freeze", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-inv", 0 ],
+					"source" : [ "obj-freeze-line", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-gate-l", 1 ],
+					"order" : 1,
+					"source" : [ "obj-freeze-inv", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-gate-r", 1 ],
+					"order" : 0,
+					"source" : [ "obj-freeze-inv", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-delay-poke-l", 0 ],
+					"source" : [ "obj-freeze-gate-l", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-delay-poke-r", 0 ],
+					"source" : [ "obj-freeze-gate-r", 0 ]
 				}
 			},
 			{

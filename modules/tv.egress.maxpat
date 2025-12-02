@@ -31,13 +31,35 @@
 		"enablehscroll" : 1,
 		"enablevscroll" : 1,
 		"devicewidth" : 0.0,
-		"description" : "tv.egress - Read from processed buffer with scroll offset",
-		"digest" : "Matrix reader with integer scroll and M/S decoding",
-		"tags" : "teevee, egress, reader, decode, scroll",
+		"description" : "DEPRECATED - tv.egress v6 (kept for reference only)",
+		"digest" : "Matrix reader with M/S decoding - REPLACED BY tv.audio in v7",
+		"tags" : "teevee, egress, reader, decode, DEPRECATED",
 		"style" : "",
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [
+			{
+				"box" : {
+					"id" : "obj-deprecated-warning",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 50.0, 30.0, 500.0, 20.0 ],
+					"text" : "⚠️ DEPRECATED in v7 - Audio now comes from tv.audio (Path A)",
+					"textcolor" : [ 1.0, 0.3, 0.3, 1.0 ]
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-deprecated-note",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 50.0, 55.0, 500.0, 20.0 ],
+					"text" : "This module is kept for reference. Do not use in new patches.",
+					"textcolor" : [ 0.5, 0.5, 0.5, 1.0 ]
+				}
+			},
 			{
 				"box" : {
 					"id" : "obj-matrix-ref",
@@ -45,7 +67,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 400.0, 30.0, 220.0, 22.0 ],
+					"patching_rect" : [ 400.0, 100.0, 220.0, 22.0 ],
 					"text" : "jit.matrix tv_ram_out 4 float32 65536"
 				}
 			},
