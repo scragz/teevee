@@ -345,6 +345,17 @@
 			},
 			{
 				"box" : {
+					"id" : "obj-scale-smear-viz",
+					"maxclass" : "newobj",
+					"numinlets" : 6,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 260.0, 520.0, 100.0, 22.0 ],
+					"text" : "scale 0. 1. 0. 0.95"
+				}
+			},
+			{
+				"box" : {
 					"id" : "obj-s-viz-smear",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
@@ -451,8 +462,14 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-s-viz-smear", 0 ],
+					"destination" : [ "obj-scale-smear-viz", 0 ],
 					"source" : [ "obj-in-smear", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-s-viz-smear", 0 ],
+					"source" : [ "obj-scale-smear-viz", 0 ]
 				}
 			},
 			{
