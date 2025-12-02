@@ -15,7 +15,7 @@ These focus on **resolution**, **color space**, and **signal integrity**.
 
 ### Implementation Details
 
-#### 1\. MOSAIC (Pixelation $\leftrightarrow$ Aliasing)
+#### 1. MOSAIC (Pixelation - Aliasing)
 
 *Concept:* Reducing the resolution of the medium. In video, this makes blocks. In audio, this makes "robotic" ringing and noise.
 
@@ -38,7 +38,7 @@ These focus on **resolution**, **color space**, and **signal integrity**.
     out = sample(tex_input, st);
     ```
 
-#### 2\. SOLARIZE (Inversion $\leftrightarrow$ Foldover)
+#### 2. SOLARIZE (Inversion - Foldover)
 
 *Concept:* When a signal exceeds the maximum brightness/loudness, instead of clipping flat, it wraps back around to zero (or inverts).
 
@@ -64,7 +64,7 @@ These focus on **resolution**, **color space**, and **signal integrity**.
     out = col;
     ```
 
-#### 3\. ABERRATION (RGB Shift $\leftrightarrow$ Multiband/Haas)
+#### 3. ABERRATION (RGB Shift - Multiband/Haas)
 
 *Concept:* The lens is broken. Red, Green, and Blue light travel at different speeds/angles. In audio, Low, Mid, and High frequencies arrive at different times.
 
@@ -74,8 +74,8 @@ These focus on **resolution**, **color space**, and **signal integrity**.
   * **Logic:**
       * Split Audio into Low (\<200Hz), Mid (200-2k), High (\>2k).
       * **Low:** 0ms delay.
-      * **Mid:** Delay = Parameter \* 20ms.
-      * **High:** Delay = Parameter \* 40ms.
+      * **Mid:** Delay = Parameter * 20ms.
+      * **High:** Delay = Parameter * 40ms.
   * **Sonic Result:** Phase cancellation, "swooshing" comb filtering, and spatial widening.
 
 **Path B: Video (Jitter/Gen)**
@@ -91,7 +91,7 @@ These focus on **resolution**, **color space**, and **signal integrity**.
     out = vec4(r, g, b, 1.0);
     ```
 
-#### 4\. GHOSTING (Interlace/Trailing $\leftrightarrow$ Spectral Convolution)
+#### 4. GHOSTING (Interlace/Trailing - Spectral Convolution)
 
 *Concept:* The "phosphors" on the screen take too long to dim. The previous image stays on screen. In audio, this is spectral freezing or heavy convolution.
 
