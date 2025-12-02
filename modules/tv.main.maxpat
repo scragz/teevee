@@ -357,7 +357,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 1000.0, 350.0, 100.0, 22.0 ],
-					"text" : "s ---tv_scrub_amt"
+					"text" : "s tv_scrub"
 				}
 			},
 			{
@@ -367,7 +367,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 700.0, 200.0, 120.0, 22.0 ],
-					"text" : "s ---tv_audio_scroll"
+					"text" : "s tv_audio_scroll"
 				}
 			},
 			{
@@ -377,7 +377,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 760.0, 230.0, 115.0, 22.0 ],
-					"text" : "s ---tv_audio_zoom"
+					"text" : "s tv_audio_zoom"
 				}
 			},
 			{
@@ -387,7 +387,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 820.0, 260.0, 120.0, 22.0 ],
-					"text" : "s ---tv_audio_rotate"
+					"text" : "s tv_audio_rotate"
 				}
 			},
 			{
@@ -397,7 +397,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 880.0, 290.0, 120.0, 22.0 ],
-					"text" : "s ---tv_audio_smear"
+					"text" : "s tv_audio_smear"
 				}
 			},
 			{
@@ -407,7 +407,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 940.0, 320.0, 120.0, 22.0 ],
-					"text" : "s ---tv_audio_freeze"
+					"text" : "s tv_audio_freeze"
 				}
 			},
 			{
@@ -417,7 +417,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 700.0, 350.0, 115.0, 22.0 ],
-					"text" : "s ---tv_param_scroll"
+					"text" : "s tv_param_scroll"
 				}
 			},
 			{
@@ -427,7 +427,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 760.0, 380.0, 110.0, 22.0 ],
-					"text" : "s ---tv_param_zoom"
+					"text" : "s tv_param_zoom"
 				}
 			},
 			{
@@ -437,7 +437,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 820.0, 410.0, 125.0, 22.0 ],
-					"text" : "s ---tv_param_rotation"
+					"text" : "s tv_param_rotation"
 				}
 			},
 			{
@@ -447,7 +447,17 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 880.0, 440.0, 115.0, 22.0 ],
-					"text" : "s ---tv_param_smear"
+					"text" : "s tv_param_smear"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-s-freeze-viz",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 940.0, 470.0, 115.0, 22.0 ],
+					"text" : "s tv_param_freeze"
 				}
 			},
 			{
@@ -633,6 +643,12 @@
 			{
 				"patchline" : {
 					"destination" : [ "obj-s-freeze-audio", 0 ],
+					"source" : [ "obj-dial-freeze", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-s-freeze-viz", 0 ],
 					"source" : [ "obj-dial-freeze", 0 ]
 				}
 			},

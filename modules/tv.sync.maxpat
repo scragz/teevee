@@ -272,7 +272,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 50.0, 380.0, 100.0, 22.0 ],
-					"text" : "s ---tv_write_y"
+					"text" : "s tv_write_y"
 				}
 			},
 			{
