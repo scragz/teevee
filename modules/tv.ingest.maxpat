@@ -31,22 +31,43 @@
 		"enablehscroll" : 1,
 		"enablevscroll" : 1,
 		"devicewidth" : 0.0,
-		"description" : "tv.ingest - Audio encoder and matrix writer (1D)",
-		"digest" : "Encodes stereo audio to ARGB and writes to 1D matrix buffer",
-		"tags" : "teevee, ingest, writer, encode",
+		"description" : "tv.ingest - Audio feature writer for VISUALIZATION ONLY (v7)",
+		"digest" : "Encodes audio features to ARGB matrix for display - NOT for audio reconstruction",
+		"tags" : "teevee, ingest, writer, encode, visualization",
 		"style" : "",
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [
 			{
 				"box" : {
-					"id" : "obj-matrix-1d",
+					"id" : "obj-title",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 400.0, 30.0, 280.0, 20.0 ],
+					"text" : "tv.ingest v7 - VISUALIZATION ONLY (Path B)"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-note",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 400.0, 50.0, 280.0, 20.0 ],
+					"text" : "Audio output comes from tv.audio (Path A)",
+					"textcolor" : [ 0.5, 0.5, 0.5, 1.0 ]
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-viz-matrix",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 450.0, 30.0, 200.0, 22.0 ],
-					"text" : "jit.matrix tv_ram 4 float32 65536"
+					"patching_rect" : [ 400.0, 80.0, 220.0, 22.0 ],
+					"text" : "jit.matrix ---tv_viz_ram 4 float32 65536"
 				}
 			},
 			{
@@ -162,7 +183,7 @@
 									"numoutlets" : 4,
 									"outlettype" : [ "", "", "", "" ],
 									"patching_rect" : [ 50.0, 80.0, 400.0, 250.0 ],
-									"code" : "// Declarations first\nHistory prev_mid(0);\n\n// Inputs\nLeft = in1;\nRight = in2;\n\n// Mid/Side encoding\nMid = (Left + Right) * 0.5;\nSide = (Left - Right) * 0.5;\n\n// Alpha: smoothed RMS envelope\nAlpha = slide(abs(Mid), 10, 100);\n\n// Green: spectral flux\nFlux = abs(Mid - prev_mid);\nprev_mid = Mid;\n\n// Outputs (ARGB planes)\nout1 = Alpha;\nout2 = Mid;\nout3 = Flux;\nout4 = Side;"
+									"code" : "// MS-Flux Mapping for Visualization (v7)\n// This data is for DISPLAY ONLY - not audio reconstruction\n\nHistory prev_mid(0);\n\n// Inputs\nLeft = in1;\nRight = in2;\n\n// Mid/Side encoding\nMid = (Left + Right) * 0.5;\nSide = (Left - Right) * 0.5;\n\n// Plane 0 (Alpha): RMS Amplitude envelope\nAlpha = slide(abs(Mid), 10, 100);\n\n// Plane 1 (Red): Mono Signal (waveform)\nRed = Mid;\n\n// Plane 2 (Green): Spectral Flux (high-frequency content)\nFlux = abs(Mid - prev_mid);\nprev_mid = Mid;\nGreen = Flux;\n\n// Plane 3 (Blue): Stereo Width (side channel)\nBlue = Side;\n\n// Outputs (ARGB planes for visualization)\nout1 = Alpha;\nout2 = Red;\nout3 = Green;\nout4 = Blue;"
 								}
 							},
 							{
@@ -297,8 +318,8 @@
 					"maxclass" : "newobj",
 					"numinlets" : 2,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 280.0, 130.0, 22.0 ],
-					"text" : "jit.poke~ tv_ram 1 0"
+					"patching_rect" : [ 50.0, 280.0, 140.0, 22.0 ],
+					"text" : "jit.poke~ ---tv_viz_ram 1 0"
 				}
 			},
 			{
@@ -307,8 +328,8 @@
 					"maxclass" : "newobj",
 					"numinlets" : 2,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 320.0, 130.0, 22.0 ],
-					"text" : "jit.poke~ tv_ram 1 1"
+					"patching_rect" : [ 50.0, 320.0, 140.0, 22.0 ],
+					"text" : "jit.poke~ ---tv_viz_ram 1 1"
 				}
 			},
 			{
@@ -317,8 +338,8 @@
 					"maxclass" : "newobj",
 					"numinlets" : 2,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 360.0, 130.0, 22.0 ],
-					"text" : "jit.poke~ tv_ram 1 2"
+					"patching_rect" : [ 50.0, 360.0, 140.0, 22.0 ],
+					"text" : "jit.poke~ ---tv_viz_ram 1 2"
 				}
 			},
 			{
@@ -327,8 +348,8 @@
 					"maxclass" : "newobj",
 					"numinlets" : 2,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 400.0, 130.0, 22.0 ],
-					"text" : "jit.poke~ tv_ram 1 3"
+					"patching_rect" : [ 50.0, 400.0, 140.0, 22.0 ],
+					"text" : "jit.poke~ ---tv_viz_ram 1 3"
 				}
 			}
 		],
