@@ -464,7 +464,7 @@
 					"outlettype" : [ "jit_matrix", "" ],
 					"patching_rect" : [ 450.0, 550.0, 192.0, 192.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 245.0, 10.0, 45.0, 45.0 ]
+					"presentation_rect" : [ 245.0, 6.0, 128.0, 128.0 ]
 				}
 			},
 			{
@@ -477,7 +477,7 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 700.0, 560.0, 100.0, 30.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 0.0, 0.0, 300.0, 140.0 ]
+					"presentation_rect" : [ 0.0, 0.0, 380.0, 140.0 ]
 				}
 			}
 		],

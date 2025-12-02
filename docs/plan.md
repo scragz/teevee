@@ -172,7 +172,7 @@ GPU shader for visual effects - scroll, warp, smear, edge detection.
 
 ### Phase 3: Visualization Path
 - [x] Update `tv.ingest.maxpat` to write to visualization-only matrix (`---tv_viz_ram`)
-- [ ] Fix `tv.fx.maxpat` matrix name mismatch (reads `tv_ram`, should read `---tv_viz_ram`)
+- [x] Fix `tv.fx.maxpat` matrix name mismatch (reads `tv_ram`, should read `---tv_viz_ram`)
 - [ ] Ensure tv.fx shader parameters match audio parameters
 - [ ] Verify visual feedback loop works independently
 
