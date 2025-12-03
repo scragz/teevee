@@ -485,6 +485,16 @@
 			},
 			{
 				"box" : {
+					"id" : "obj-s-viz-freeze",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 1000.0, 350.0, 125.0, 22.0 ],
+					"text" : "s tv_param_freeze"
+				}
+			},
+			{
+				"box" : {
 					"id" : "obj-scale-scroll-viz",
 					"maxclass" : "newobj",
 					"numinlets" : 6,
@@ -873,6 +883,14 @@
 			{
 				"patchline" : {
 					"destination" : [ "obj-s-audio-freeze", 0 ],
+					"order" : 1,
+					"source" : [ "obj-in-freeze", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-s-viz-freeze", 0 ],
+					"order" : 0,
 					"source" : [ "obj-in-freeze", 0 ]
 				}
 			},

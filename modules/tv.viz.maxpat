@@ -986,12 +986,6 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-gen", 0 ],
-					"source" : [ "obj-scroll-prepend", 0 ]
-				}
-			},
-			{
-				"patchline" : {
 					"destination" : [ "obj-zoom-store", 1 ],
 					"source" : [ "obj-r-zoom", 0 ]
 				}
@@ -1006,12 +1000,6 @@
 				"patchline" : {
 					"destination" : [ "obj-zoom-prepend", 0 ],
 					"source" : [ "obj-zoom-scale", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-gen", 0 ],
-					"source" : [ "obj-zoom-prepend", 0 ]
 				}
 			},
 			{
@@ -1034,12 +1022,6 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-gen", 0 ],
-					"source" : [ "obj-rotation-prepend", 0 ]
-				}
-			},
-			{
-				"patchline" : {
 					"destination" : [ "obj-smear-store", 1 ],
 					"source" : [ "obj-r-smear", 0 ]
 				}
@@ -1052,12 +1034,6 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-gen", 0 ],
-					"source" : [ "obj-smear-prepend", 0 ]
-				}
-			},
-			{
-				"patchline" : {
 					"destination" : [ "obj-edge-store", 1 ],
 					"source" : [ "obj-r-edge", 0 ]
 				}
@@ -1066,12 +1042,6 @@
 				"patchline" : {
 					"destination" : [ "obj-edge-prepend", 0 ],
 					"source" : [ "obj-edge-store", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-gen", 0 ],
-					"source" : [ "obj-edge-prepend", 0 ]
 				}
 			},
 			{
@@ -1102,18 +1072,6 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-gen", 0 ],
-					"source" : [ "obj-warp-prepend-x", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-gen", 0 ],
-					"source" : [ "obj-warp-prepend-y", 0 ]
-				}
-			},
-			{
-				"patchline" : {
 					"destination" : [ "obj-scrub-store", 1 ],
 					"source" : [ "obj-r-scrub", 0 ]
 				}
@@ -1122,12 +1080,6 @@
 				"patchline" : {
 					"destination" : [ "obj-scrub-prepend", 0 ],
 					"source" : [ "obj-scrub-store", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-gen", 0 ],
-					"source" : [ "obj-scrub-prepend", 0 ]
 				}
 			},
 			{
@@ -1150,12 +1102,6 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-gen", 0 ],
-					"source" : [ "obj-mosaic-prepend", 0 ]
-				}
-			},
-			{
-				"patchline" : {
 					"destination" : [ "obj-aberration-store", 1 ],
 					"source" : [ "obj-r-aberration", 0 ]
 				}
@@ -1174,12 +1120,6 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-gen", 0 ],
-					"source" : [ "obj-aberration-prepend", 0 ]
-				}
-			},
-			{
-				"patchline" : {
 					"destination" : [ "obj-bloom-store", 1 ],
 					"source" : [ "obj-r-bloom", 0 ]
 				}
@@ -1192,12 +1132,6 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-gen", 0 ],
-					"source" : [ "obj-bloom-prepend", 0 ]
-				}
-			},
-			{
-				"patchline" : {
 					"destination" : [ "obj-solarize-store", 1 ],
 					"source" : [ "obj-r-solarize", 0 ]
 				}
@@ -1206,12 +1140,6 @@
 				"patchline" : {
 					"destination" : [ "obj-solarize-prepend", 0 ],
 					"source" : [ "obj-solarize-store", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-gen", 0 ],
-					"source" : [ "obj-solarize-prepend", 0 ]
 				}
 			},
 			{
@@ -1234,12 +1162,6 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-gen", 0 ],
-					"source" : [ "obj-crush-prepend", 0 ]
-				}
-			},
-			{
-				"patchline" : {
 					"destination" : [ "obj-shutter-store", 1 ],
 					"source" : [ "obj-r-shutter", 0 ]
 				}
@@ -1248,12 +1170,6 @@
 				"patchline" : {
 					"destination" : [ "obj-shutter-prepend", 0 ],
 					"source" : [ "obj-shutter-store", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-gen", 0 ],
-					"source" : [ "obj-shutter-prepend", 0 ]
 				}
 			},
 			{
@@ -1272,12 +1188,6 @@
 				"patchline" : {
 					"destination" : [ "obj-ghosting-prepend", 0 ],
 					"source" : [ "obj-ghosting-scale", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-gen", 0 ],
-					"source" : [ "obj-ghosting-prepend", 0 ]
 				}
 			},
 			{
