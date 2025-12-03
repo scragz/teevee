@@ -4,16 +4,37 @@ Teevee is an audio effect for Max for Live inspired by video processing techniqu
 
 ## The Effect
 
-Audio passes through a chain of time and spectral manipulation:
+### A. Core Transforms (Geometry)
 
-- **Scroll** — Delay line pushing audio into the past
-- **Zoom** — Varispeed pitch shifting
-- **Rotate** — Bode frequency shifting and spectrum displacement
-- **Smear** — Multi-tap reverb / feedback wash
-- **Freeze** — Trap the current moment in a loop
-- **Scrub** - Tape slip effect
+*Manipulating the position and orientation of the medium.*
 
-The audio engine runs in 64-bit MSP for artifact-free processing. The video engine runs on GPU for smooth visuals without interfering with audio.
+| Parameter | Visual Metaphor (GPU) | Audio Mechanism (MSP) | The Shared Experience |
+| :--- | :--- | :--- | :--- |
+| **SCROLL** | **Vertical Pan** (Y-Axis Offset) | **Delay Line** (Time Offset) | Pushing the content away into the "past." |
+| **ZOOM** | **UV Scaling** (Stretch/Squash) | **Varispeed** (Repitch) | Stretching the medium. Zoom In = Slow Down. |
+| **ROTATE** | **2D Rotation** (Twist) | **Frequency Shift** (Spectrum Shift) | Displacing content from its center/fundamental. |
+
+### B. Signal Artifacts (Texture)
+
+*Degrading the quality and integrity of the signal.*
+
+| Parameter | Visual Metaphor (GPU) | Audio Mechanism (MSP) | The Shared Experience |
+| :--- | :--- | :--- | :--- |
+| **MOSAIC** | **Pixelation** (Spatial Res) | **Downsampling** (Time Quantization) | The grid becomes visible. "Robotic" ringing. |
+| **ABERRATION**| **RGB Shift** (Channel Offset) | **Multiband Delay** (Spectral Split) | The constituent parts (colors/freqs) separate. |
+| **BLOOM** | **Glow/Bleed** (Saturation) | **Overdrive** (Harmonic Distortion) | Energy overflows its container. Edges blur. |
+| **SOLARIZE** | **Luma Inversion** (Threshold) | **Wavefolding** (Foldover) | Peaks are too high and wrap around. Metallic. |
+| **CRUSH** | **Posterization** (Color Depth) | **Bit Reduction** (Amp Quantization) | The gradient steps become visible. Low-Fi. |
+
+### C. Time & Space (Motion)
+
+*Manipulating the persistence and flow of the signal.*
+
+| Parameter | Visual Metaphor (GPU) | Audio Mechanism (MSP) | The Shared Experience |
+| :--- | :--- | :--- | :--- |
+| **SHUTTER** | **Strobe** (Frame Gating) | **Tremolo** (Amplitude Gating) | A rhythmic mechanical chopping of the stream. |
+| **GHOSTING** | **Double Vision** (Lag) | **Slapback** (Short Delay) | A distinct "shadow" of the signal following it. |
+| **SMEAR** | **Frame Feedback** (Blur) | **Reverb** (Decay) | The refusal of the signal to die. Infinite tails. |
 
 ## Architecture
 
