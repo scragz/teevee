@@ -711,8 +711,60 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 50.0, 650.0, 75.0, 22.0 ],
-					"text" : "jit.pix @file tv.core.genjit"
+					"patching_rect" : [ 50.0, 650.0, 45.0, 22.0 ],
+					"text" : "jit.gen",
+					"patcher" : {
+						"fileversion" : 1,
+						"appversion" : {
+							"major" : 8,
+							"minor" : 6,
+							"revision" : 0,
+							"architecture" : "x64",
+							"modernui" : 1
+						},
+						"classnamespace" : "jit.gen",
+						"rect" : [ 100.0, 100.0, 600.0, 400.0 ],
+						"boxes" : [
+							{
+								"box" : {
+									"id" : "obj-in1",
+									"maxclass" : "newobj",
+									"patching_rect" : [ 50.0, 30.0, 30.0, 22.0 ],
+									"text" : "in 1"
+								}
+							},
+							{
+								"box" : {
+									"id" : "obj-codebox",
+									"maxclass" : "codebox",
+									"patching_rect" : [ 50.0, 70.0, 400.0, 200.0 ],
+									"code" : "out1 = in1;"
+								}
+							},
+							{
+								"box" : {
+									"id" : "obj-out1",
+									"maxclass" : "newobj",
+									"patching_rect" : [ 50.0, 290.0, 35.0, 22.0 ],
+									"text" : "out 1"
+								}
+							}
+						],
+						"lines" : [
+							{
+								"patchline" : {
+									"destination" : [ "obj-codebox", 0 ],
+									"source" : [ "obj-in1", 0 ]
+								}
+							},
+							{
+								"patchline" : {
+									"destination" : [ "obj-out1", 0 ],
+									"source" : [ "obj-codebox", 0 ]
+								}
+							}
+						]
+					}
 				}
 			},
 			{
