@@ -1,113 +1,152 @@
-# Implementation Plan: New Effects
+This implementation plan guides you through refactoring **Teevee** from its current prototype state into the complete **Parallel Twin Engine** architecture defined in your specs.
 
-This document outlines the technical implementation steps for adding Mosaic, Solarize, Aberration, and Ghosting effects to the Teevee system.
+### **Phase 1: The Architectural Split**
 
-## 1. Architecture Changes
+*Goal: Separate "Geometry" from "Artifacts" and strictly define the Audio vs. Video domains.*
 
-We will introduce a new Gen~ patcher `code/tv.effects.gendsp` to handle the audio side of these effects efficiently. This keeps the main `tv.audio.maxpat` clean and leverages Gen's performance for per-sample processing.
+Currently, your `tv.fx.maxpat` is handling visual effects. **This will change.**
 
-For video, we will modify the existing `code/tv.core.genjit` to include the new visual effects.
+  * **Old `tv.fx`**: Visual Processing (jit.rota, feedback).
+  * **New `tv.fx`**: **Audio Artifacts** (Distortion, Bitcrush, Gating).
+  * **New `tv.viz`**: **Visual Processing** (Container for the `jit.gen` shader).
 
-## 2. Parameter Routing (`modules/tv.param.maxpat`)
+#### **Step 1: Clean `tv.main.maxpat`**
 
-We need to expose 4 new parameters to the system.
+1.  Disconnect `tv.fx` from the visual chain.
+2.  Re-route the **Audio Chain** (Path A):
+      * `plugin~` $\to$ `tv.audio` $\to$ **[NEW]** `tv.fx` $\to$ `plugout~`.
+3.  Re-route the **Visual Chain** (Path B):
+      * `tv.ingest` $\to$ **[NEW]** `tv.viz`.
+      * (*Note: `tv.viz` will now host the shader logic that was previously in `tv.fx`.*)
 
-**New Inlets:**
-- Inlet 10: `Mosaic` (0-1)
-- Inlet 11: `Solarize` (0-1)
-- Inlet 12: `Aberration` (0-1)
-- Inlet 13: `Ghosting` (0-1)
+#### **Step 2: Strip `tv.audio.maxpat`**
 
-**Scaling & Routing:**
-- **Mosaic**:
-    - Audio: `scale 0. 1. 1. 0.` (Inverse amount for quality?) or `0. 1.` -> Send to `tv_audio_mosaic`
-    - Viz: `scale 0. 1. 0. 1.` -> Send to `tv_param_mosaic`
-- **Solarize**:
-    - Audio: `scale 0. 1. 0. 1.` -> Send to `tv_audio_solarize`
-    - Viz: `scale 0. 1. 0. 1.` -> Send to `tv_param_solarize`
-- **Aberration**:
-    - Audio: `scale 0. 1. 0. 100.` (ms delay spread) -> Send to `tv_audio_aberration`
-    - Viz: `scale 0. 1. 0. 0.1` (UV offset) -> Send to `tv_param_aberration`
-- **Ghosting**:
-    - Audio: `scale 0. 1. 0. 0.95` (Feedback amount) -> Send to `tv_audio_ghosting`
-    - Viz: `scale 0. 1. 0. 0.9` (Feedback blend) -> Send to `tv_param_ghosting`
+This module becomes the "Tape Head" (Geometry only).
 
-## 3. Audio Implementation (`code/tv.effects.gendsp`)
+1.  **Keep**: Stage 1 (Delay/Scroll), Stage 2 (Varispeed/Zoom), Stage 3 (FreqShift/Rotate).
+2.  **Remove**: Stage 4 (Reverb/Smear).
+      * *Why:* Smear is now the final stage of the **Artifacts** chain in `tv.fx` to ensure tails aren't chopped by the Shutter.
 
-Create a new Gen~ file.
+-----
 
-**Inputs:**
-- `in1`, `in2`: Stereo Audio
-- `mosaic`, `solarize`, `aberration`, `ghosting`: Parameters
+### **Phase 2: Build the Audio Artifacts Engine (`tv.fx.maxpat`)**
 
-**Processing Chain:**
+*Goal: Create a serial chain of MSP objects for texture and space.*
 
-1.  **Solarize (Distortion)**:
-    -   Algorithm: Foldover.
-    -   Code: `out = fold(in * (1 + solarize * 5), -1, 1)` (Gain up then fold).
+**Action:** Clear the contents of `tv.fx.maxpat` (previously visual) and build this audio chain:
 
-2.  **Aberration (Multiband Delay)**:
-    -   Algorithm: 3-band crossover using `svf`.
-    -   Low (<200Hz): No delay.
-    -   Mid (200-2k): Delay L/R by `aberration * 0.5`.
-    -   High (>2k): Delay L/R by `aberration`.
-    -   *Note*: Gen~ `delay` requires a buffer size definition. We might need `delay` operator with a defined max size (e.g., `delay 44100`).
+1.  **Inlets:** Audio L, Audio R.
+2.  **Stage 1: MOSAIC (Resolution)**
+      * **Object:** `degrade~`
+      * **Param:** `mosaic` (1.0 $\to$ 0.05). Map to `sampling_rate_ratio`.
+3.  **Stage 2: ABERRATION (Spectral Split)**
+      * **Logic:** Split bands, delay highs.
+      * **Objects:** `svf~` (or `cross~`) to split Low/Mid/High.
+      * **Processing:**
+          * Low: Pass through.
+          * Mid: `tapout~` (Param \* 20ms).
+          * High: `tapout~` (Param \* 40ms).
+4.  **Stage 3: BLOOM (Saturation)**
+      * **Objects:** `*~` (Gain) $\to$ `tanh~` (Soft Clip) $\to$ `*~` (Compensation).
+5.  **Stage 4: SOLARIZE (Foldover)**
+      * **Object:** `pong~ 1 -1 1` (Standard MSP object for folding).
+      * **Param:** `solarize` controls input gain into the fold.
+6.  **Stage 5: CRUSH (Quantization)**
+      * **Object:** `degrade~`
+      * **Param:** `crush`. Map to `bit_depth` (24 $\to$ 4).
+7.  **Stage 6: SHUTTER (Gating)**
+      * **Object:** `phasor~` $\to$ `>~ 0.5` $\to$ `*~` (Signal Multiplier).
+      * **Param:** `shutter` controls `phasor~` frequency (0 $\to$ 20Hz).
+8.  **Stage 7: GHOSTING (Lag)**
+      * **Logic:** Metallic Slapback.
+      * **Objects:** `tapin~` $\to$ `tapout~ 15` $\to$ Feedback Loop (`*~ 0.8`).
+9.  **Stage 8: SMEAR (Space)**
+      * **Logic:** Move the Reverb logic here (from `tv.audio`).
+      * *Why Last:* To wash out the artifacts and chopping if desired.
 
-3.  **Ghosting (Comb/Feedback)**:
-    -   Algorithm: Short feedback delay (slapback).
-    -   Code: `out = in + delay(in, 15ms) * ghosting`.
+-----
 
-4.  **Mosaic (Degrade)**:
-    -   Algorithm: Sample Rate Reduction & Bit Crushing.
-    -   Code:
-        -   SR: `phasor` or counter to hold sample for N frames.
-        -   Bit: `floor(in * bits) / bits`.
+### **Phase 3: The Unified Visual Shader (`tv.core.genjit`)**
 
-**Integration:**
--   Add `gen~ @gen tv.effects.gendsp` to `modules/tv.audio.maxpat` before the final output.
+*Goal: Consolidate all visual processing into a single GPU pass.*
 
-## 4. Video Implementation (`code/tv.core.genjit`)
+**Action:** Update the code in `tv.core.genjit`. It currently has Scroll/Zoom/Rotate. You need to paste the new algorithms from your plan **in this specific order**:
 
-Modify existing `tv.core.genjit`.
+```glsl
+// 1. GEOMETRY (Existing)
+// ... (Scroll, Zoom, Rotate logic) ...
 
-**New Params:**
--   `mosaic`, `solarize`, `aberration`, `ghosting`.
+// 2. MOSAIC (New)
+Param mosaic(0);
+float cells = mix(2048.0, 10.0, mosaic);
+vec2 st = floor(uv_feedback * cells) / cells;
 
-**Shader Logic:**
+// 3. ABERRATION (New)
+Param aberration(0);
+float shift = aberration * 0.05;
+// Sample Red at +shift, Blue at -shift
+float r = sample(feedback_frame, st + vec2(shift, 0)).r;
+float g = sample(feedback_frame, st).g;
+float b = sample(feedback_frame, st - vec2(shift, 0)).b;
+vec4 col = vec4(r, g, b, 1.0);
 
-1.  **Mosaic**:
-    -   Quantize UVs before sampling.
-    -   `uv = floor(uv * blocks) / blocks`.
+// 4. BLOOM (New)
+Param bloom(0);
+// ... Insert 4-tap blur code from plan-more-new-effects.md ...
+// Add bloom to 'col'
 
-2.  **Aberration**:
-    -   Sample texture 3 times with offsets for R, G, B channels.
-    -   `r = sample(tex, uv + offset).r`
-    -   `b = sample(tex, uv - offset).b`
+// 5. SOLARIZE (New)
+Param solarize(0);
+if (solarize > 0) {
+    col.rgb = abs(col.rgb - solarize);
+}
 
-3.  **Solarize**:
-    -   Apply to sampled color.
-    -   `color.rgb = abs(color.rgb - solarize)` (if solarize > 0).
+// 6. CRUSH (New)
+Param crush(0);
+float steps = mix(255.0, 2.0, pow(crush, 0.5));
+col.rgb = floor(col.rgb * steps) / steps;
 
-4.  **Ghosting**:
-    -   Modify the feedback loop.
-    -   Currently `smear` handles feedback. `ghosting` might be a distinct "trail" effect.
-    -   We can reuse the `feedback_frame` but maybe apply a different blend mode or offset for ghosting.
-    -   *Decision*: Let's implement Ghosting as a "frame blend" distinct from Smear if possible, or just enhance Smear. The plan says "Previous Frame Blend". `smear` in `tv.core` is already `mix(input, feedback, smear)`.
-    -   Maybe Ghosting adds a spatial offset to the feedback? Or just controls the feedback decay differently?
-    -   Let's implement it as a "Double Vision" effect: mix current frame with a *delayed* frame? Genjit `History` is only 1 frame.
-    -   Alternative: Ghosting = "Interlacing" effect? The plan says "Previous Frame Blend (Interlacing)".
-    -   Let's stick to the plan: "Mix current frame with a frame buffered 2-3 frames ago". This is hard in single-buffer Gen.
-    -   *Compromise*: Ghosting will be implemented as "Smear with spatial offset" (Motion Blur) or just mapped to the existing `smear` parameter if it's redundant.
-    -   Actually, the plan says "Ghosting" -> "Convolution".
-    -   Let's implement Ghosting as **Interlacing/Scanlines** in Video to differentiate from Smear.
-    -   *Wait*, the plan says: "The 'ghost' of the previous signal overlays the current one."
-    -   Let's implement it as a simple **Feedback Decay** (which `smear` is) but maybe we rename `smear` to `ghosting` or use `ghosting` to control the *feedback amount* and `smear` to control the *blur*?
-    -   Let's look at `tv.core` again. `smear` mixes input and feedback.
-    -   Let's add `ghosting` as a parameter that *modulates* the feedback UVs (e.g. zooms the feedback out slightly to create trails).
+// 7. SHUTTER (New)
+Param shutter(0);
+Param time(0);
+// ... Insert Square Wave logic from plan-more-new-effects.md ...
+// Multiply 'col' by mask
 
-## 5. Todos
+// 8. OUTPUT
+out1 = col;
+```
 
-1.  [ ] Create `code/tv.effects.gendsp` with the 4 audio effects.
-2.  [ ] Update `modules/tv.audio.maxpat` to include `tv.effects.gendsp`.
-3.  [ ] Update `code/tv.core.genjit` with the 4 video effects.
-4.  [ ] Update `modules/tv.param.maxpat` to route the new parameters.
+-----
+
+### **Phase 4: Update `tv.viz.maxpat`**
+
+*Goal: Make this the container for the visual engine.*
+
+1.  **Inlet:** Audio Features Matrix (from `tv.ingest`).
+2.  **Parameters:** Add `r ---tv_param_*` objects for **all 10 effects**.
+      * Scroll, Zoom, Rotate, Smear (Existing).
+      * Mosaic, Aberration, Bloom, Solarize, Crush, Shutter, Ghosting (New).
+3.  **Shader:** Use `jit.gl.pix` or `jit.gen` referencing `@gen tv.core.genjit`.
+      * Connect the Matrix to Input 1.
+      * Connect a Feedback path to Input 2 (Texture feedback).
+4.  **Display:** Output to `jit.pwindow` or `jit.world`.
+
+-----
+
+### **Phase 5: Routing (`tv.param.maxpat`)**
+
+*Goal: Add the 7 new knobs.*
+
+1.  **New Inlets:** Add inlets 9-15 for the new effects.
+2.  **Dual Scaling:** For each new parameter, create the split scaling logic:
+      * **Audio Scale:** e.g., Mosaic 0-1 $\to$ 1.0-0.05. Send to `tv_audio_mosaic`.
+      * **Visual Scale:** e.g., Mosaic 0-1 $\to$ 2048-10. Send to `tv_param_mosaic`.
+      * *(Refer to "Parameter Scaling Reference" in `architecture.md` for exact values).*
+
+### **Refactoring Checklist**
+
+  * [ ] **Delete** visual logic from `tv.fx.maxpat`.
+  * [ ] **Move** Reverb from `tv.audio` to `tv.fx`.
+  * [ ] **Update** `tv.core.genjit` with the full GLSL code block.
+  * [ ] **Reconnect** `tv.main` to route Audio $\to$ FX $\to$ Out.
+  * [ ] **Verify** `tv.ingest` is only sending data to `tv.viz`, not `tv.fx`.
