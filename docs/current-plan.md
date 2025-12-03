@@ -42,14 +42,16 @@ This plan guides the refactoring of **Teevee** into the complete **Parallel Twin
 ## Phase 5: Routing (`tv.param.maxpat`)
 *Goal: Add the 7 new knobs and scaling logic.*
 
-- [ ] 22. Add 7 new parameter inlets to `tv.param.maxpat`.
-- [ ] 23. **MOSAIC Scaling**: Audio (1.0 - 0.05), Visual (2048 - 10).
-- [ ] 24. **ABERRATION Scaling**: Audio (0 - 40ms), Visual (0 - 0.05).
-- [ ] 25. **BLOOM Scaling**: Audio (1 - 8 drive), Visual (0 - 1).
-- [ ] 26. **SOLARIZE Scaling**: Audio/Visual (0 - 1 threshold).
-- [ ] 27. **CRUSH Scaling**: Audio (24 - 4 bits), Visual (255 - 2 steps).
-- [ ] 28. **SHUTTER Scaling**: Audio/Visual (0 - 20Hz).
-- [ ] 29. **GHOSTING Scaling**: Audio (0 - 0.8 fb), Visual (0 - 0.5 mix).
+- [x] 22. Add 7 new parameter inlets to `tv.param.maxpat`.
+- [x] 23. **MOSAIC Scaling**: Audio (1.0 - 0.05), Visual (2048 - 10).
+- [x] 24. **ABERRATION Scaling**: Audio (0 - 40ms), Visual (0 - 0.05).
+- [x] 25. **BLOOM Scaling**: Audio (1 - 8 drive), Visual (0 - 1).
+- [x] 26. **SOLARIZE Scaling**: Audio/Visual (0 - 1 threshold).
+- [x] 27. **CRUSH Scaling**: Audio (24 - 4 bits), Visual (255 - 2 steps).
+- [x] 28. **SHUTTER Scaling**: Audio/Visual (0 - 20Hz).
+- [x] 29. **GHOSTING Scaling**: Audio (0 - 0.8 fb), Visual (0 - 0.5 mix).
+- [x] 30. Reorganize UI layout into logical groups (GEOMETRY, TEXTURE, SPACE).
+- [x] 31. Create UI layout documentation (`ui-layout.md`).
 
 ## Testing & Optimization
 - [ ] 30. Verify effect order matches exactly in audio and visual chains.
