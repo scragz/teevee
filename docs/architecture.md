@@ -1,231 +1,173 @@
-# System Architecture: Teevee
+This document consolidates the original system architecture with the new "Signal Artifacts" expansion. It redefines the Synesthetic Map and the precise signal flow to ensure the Audio and Video engines remain mechanically isomorphic.
+
+# System Architecture 2.0: Teevee
 
 ## I. Core Concept
 
-Teevee uses a **Parallel Twin Engine** architecture.
-
-Two simultaneous processing chains are driven by a unified control system.
+Teevee uses a **Parallel Twin Engine** architecture. Two simultaneous processing chains are driven by a unified control system.
 
   * **The Audio Engine (MSP):** High-fidelity, 64-bit, artifact-free DSP.
   * **The Video Engine (Jitter):** A reactive "Heads-Up Display" that visualizes the audio manipulations using metaphorical shaders.
 
-**The Goal:** "What you see is what you hear," but without the digital degradation of video-to-audio conversion.
+**The Goal:** "What you see is what you hear." A 1:1 mapping of video aesthetics to audio physics.
 
 -----
 
-## II. System Topology
+## II. The Expanded Synesthetic Map
 
-The system is split into three distinct domains:
+This map defines how visual transformations translate to audio DSP. It is divided into **Core Transforms** (Geometry), **Artifacts** (Resolution/Color), and **Temporal States**.
 
-1.  **Sync Core (Control Voltage):** A central clock/LFO system that drives parameters.
-2.  **Path A: Hi-Def Audio (The Truth):** Standard MSP buffers and spectral processors.
-3.  **Path B: Visualizer (The Metaphor):** GPU shaders acting as a "Slit-Scan" interpretation of the audio state.
+### A. Core Transforms (Geometry)
 
-<!-- end list -->
-
-```mermaid
-graph TD
-    Input[Audio Input] --> Split{Splitter}
-    Split --> AudioPath[Path A: MSP Audio Engine]
-    Split --> VideoPath[Path B: Jitter Video Engine]
-
-    Controls[User Controls / LFOs] --> AudioPath
-    Controls --> VideoPath
-
-    AudioPath --> Output[Audio Output]
-    VideoPath --> Screen[Visual Display]
-```
-
------
-
-## III. The Synesthetic Map (The Link)
-
-This map defines how visual transformations translate to audio DSP. We use **Mechanic Isomorphism** (processes that *feel* the same).
+*Manipulating the position and orientation of the medium.*
 
 | Parameter | Visual Metaphor (GPU) | Audio Mechanism (MSP) | The Shared Experience |
 | :--- | :--- | :--- | :--- |
 | **SCROLL** | **Vertical Pan** (Y-Axis Offset) | **Delay Line** (Time Offset) | Pushing the content away into the "past." |
-| **ZOOM** | **UV Scaling** (Stretch/Squash) | **Varispeed / Pitch** (Repitch) | Stretching the medium. Zoom In = Slow Down (Low Pitch). Zoom Out = Speed Up (High Pitch). |
-| **ROTATE** | **2D Rotation** (Twist) | **Frequency Shift** (Spectrum Shift) | Displacing the content from its center. Rotating pixels = Shifting Hertz. |
-| **SMEAR** | **Frame Feedback** (Blur) | **Reverb / Feedback** (Decay) | The refusal of the signal to die. Trails in space = Trails in time. |
-| **FREEZE** | **Pixel Sorting / Bloom** | **Buffer Loop** (Gating) | Time stops. The current moment is trapped and degrades into entropy. |
-| **SCRUB** | **Horizontal Displacement** (Tracking Error) | **Index Jitter** (Pitch Warble) | Tape slip. Random noise destabilizes the read position. |
+| **ZOOM** | **UV Scaling** (Stretch/Squash) | **Varispeed** (Repitch) | Stretching the medium. Zoom In = Slow Down. |
+| **ROTATE** | **2D Rotation** (Twist) | **Frequency Shift** (Spectrum Shift) | Displacing content from its center/fundamental. |
+
+### B. Signal Artifacts (Texture)
+
+*Degrading the quality and integrity of the signal.*
+
+| Parameter | Visual Metaphor (GPU) | Audio Mechanism (MSP) | The Shared Experience |
+| :--- | :--- | :--- | :--- |
+| **MOSAIC** | **Pixelation** (Spatial Res) | **Downsampling** (Time Quantization) | The grid becomes visible. "Robotic" ringing. |
+| **ABERRATION**| **RGB Shift** (Channel Offset) | **Multiband Delay** (Spectral Split) | The constituent parts (colors/freqs) separate. |
+| **BLOOM** | **Glow/Bleed** (Saturation) | **Overdrive** (Harmonic Distortion) | Energy overflows its container. Edges blur. |
+| **SOLARIZE** | **Luma Inversion** (Threshold) | **Wavefolding** (Foldover) | Peaks are too high and wrap around. Metallic. |
+| **CRUSH** | **Posterization** (Color Depth) | **Bit Reduction** (Amp Quantization) | The gradient steps become visible. Low-Fi. |
+
+### C. Time & Space (Motion)
+
+*Manipulating the persistence and flow of the signal.*
+
+| Parameter | Visual Metaphor (GPU) | Audio Mechanism (MSP) | The Shared Experience |
+| :--- | :--- | :--- | :--- |
+| **SHUTTER** | **Strobe** (Frame Gating) | **Tremolo** (Amplitude Gating) | A rhythmic mechanical chopping of the stream. |
+| **GHOSTING** | **Double Vision** (Lag) | **Slapback** (Short Delay) | A distinct "shadow" of the signal following it. |
+| **SMEAR** | **Frame Feedback** (Blur) | **Reverb** (Decay) | The refusal of the signal to die. Infinite tails. |
 
 -----
 
-## IV. Path A: The Hi-Def Audio Engine (MSP)
+## III. System Topology & Signal Flow
 
-This engine prioritizes bit-transparency and standard DAW behavior.
+To maintain the metaphor, the Audio and Video engines must follow the exact same logical order of operations.
 
-### 1. The Container
+**The Golden Chain:**
+`Input` $\to$ `Geometry` $\to$ `Resolution` $\to$ `Distortion` $\to$ `Gating` $\to$ `Space` $\to$ `Output`
 
-  * **Object:** `buffer~ tv_audio_ring 65536 2` (Stereo, \~1.5s history).
-  * **Ingest:** `poke~ tv_audio_ring` writes audio circularly.
+### Path A: The Audio Engine (MSP)
 
-### 2. The Playback Head (Scroll & Zoom)
+*File: `tv.audio.maxpat` & `tv.fx.maxpat`*
 
-Instead of `jit.peek~`, we use `groove~` or `index~` logic.
+1.  **Input Buffer** (Circular Recording)
+2.  **Geometry (The Read Head)**
+      * **Scroll:** Delay offset (0–1000ms).
+      * **Zoom:** Varispeed playback (0.5x–2.0x).
+      * **Rotate:** Frequency Shifter (-500Hz to +500Hz).
+3.  **Resolution**
+      * **Mosaic:** `degrade~` (Sample Rate reduction).
+4.  **Split**
+      * **Aberration:** Multiband crossover $\to$ micro-delays on High/Mid bands.
+5.  **Distortion**
+      * **Bloom:** `overdrive~` / `tanh~` (Saturation).
+      * **Solarize:** `pong~` (Wavefolding/Inversion).
+      * **Crush:** `degrade~` (Bit Depth reduction).
+6.  **Gating**
+      * **Shutter:** `phasor~` driven Tremolo (Square wave LFO).
+7.  **Space**
+      * **Ghosting:** Short `tapout~` (15-30ms) with high feedback (Metallic).
+      * **Smear:** Feedback Delay Network / Reverb (Wash).
+8.  **Output**
 
-  * **Zoom Logic:** The `groove~` playback speed is linked to the Zoom knob.
-      * Zoom 1.0 = Speed 1.0.
-      * Zoom 0.5 (In) = Speed 0.5 (Octave Down).
-  * **Scroll Logic:** A delay offset applied to the read pointer.
-      * `tapin~` / `tapout~` is arguably cleaner for pure delay, but `phasor~` reading the buffer allows for "Scrubbing."
-      * *Implementation:* `phasor~` (Master Sync) + `offset` $\to$ `index~ tv_audio_ring`.
+### Path B: The Video Engine (Jitter)
 
-### 3. The Twister (Rotate)
+*File: `tv.viz.maxpat` (incorporating `tv.core.genjit`)*
 
-  * **Object:** `freqshift~` (Bode Shifter).
-  * **Logic:**
-      * Visual Rotate Right (+90°) $\to$ Shift Up (+500Hz).
-      * Visual Rotate Left (-90°) $\to$ Shift Down (-500Hz).
-      * *Note:* Use a dry/wet mix. Frequency shifting is destructive and inharmonic.
-
-### 4. The Wash (Smear)
-
-  * **Object:** A simple Feedback Delay Network (FDN) or `cverb~`.
-  * **Logic:**
-      * Visual Smear 0% = Dry Audio.
-      * Visual Smear 100% = Infinite Reverb Tail (Freeze).
-
------
-
-## V. Path B: The Video Engine (Jitter)
-
-This engine prioritizes aesthetics and frame rate. It does **not** affect the sound.
-
-### 1. The Ingest (Analysis)
-
-We do not write raw audio to the texture (it looks like static). We write **Features**.
-
-  * **Objects:** `jit.poke~` into `jit.matrix tv_viz_ram 4 float32 256 256`.
-  * **The MS-Flux Mapping:**
-      * **Plane 0 (Alpha):** Audio Amplitude (RMS).
-      * **Plane 1 (Red):** Mono Signal (Waveform).
-      * **Plane 2 (Green):** Spectral Flux (High-frequency content).
-      * **Plane 3 (Blue):** Stereo Width (Side channel).
-
-### 2. The Shader (`jit.gl.pix`)
-
-The shader performs visual transforms that correspond to audio DSP operations.
-
-```glsl
-// Concept Code for tv.core.genjit
-in vec2 uv;
-uniform float zoom; // Linked to Audio Pitch
-uniform float rotate; // Linked to Freq Shift
-uniform float scroll; // Linked to Delay Time
-uniform sampler2D tex_input;
-
-void main() {
-    vec2 st = uv;
-
-    // 1. ROTATE (Matches Freq Shift)
-    // Standard 2D rotation matrix around center (0.5, 0.5)
-
-    // 2. ZOOM (Matches Pitch)
-    // Scale coordinates from center
-
-    // 3. SCROLL (Matches Delay)
-    // Offset Y axis: st.y += scroll;
-
-    out = sample(tex_input, st);
-}
-```
+1.  **Ingest** (Audio Features mapped to Matrix)
+2.  **Geometry (Coordinates)**
+      * **Scroll:** Offset Y.
+      * **Zoom:** Scale UV.
+      * **Rotate:** Rotate UV.
+3.  **Resolution**
+      * **Mosaic:** Quantize UV coordinates (Pixelate).
+4.  **Split**
+      * **Aberration:** Sample texture 3x with offsets for R, G, B.
+5.  **Distortion**
+      * **Bloom:** 4-Tap Blur + Threshold + Additive Blend.
+      * **Solarize:** `abs(rgb - threshold)`.
+      * **Crush:** Quantize RGB values (Posterize).
+6.  **Gating**
+      * **Shutter:** Multiplies output by Black based on Time LFO.
+7.  **Space**
+      * **Ghosting:** Mix with frame buffer from 2 frames ago.
+      * **Smear:** Mix with immediate previous frame (Feedback).
+8.  **Output**
 
 -----
 
-## VI. Interaction & Control Logic
+## IV. Module Architecture
 
-### 1. The Freeze (Datamosh Break)
-
-  * **Trigger:** User toggle.
-  * **Audio Action:**
-      * `gate~ 0` cuts the input to `poke~` (Buffer stops recording).
-      * The Read Head (`index~`) keeps looping the existing buffer.
-  * **Video Action:**
-      * Stop `jit.poke~` (Matrix stops updating).
-      * Enable "Bloom" or "Pixel Sort" shader pass to degrade the static image.
-
-### 2. The Scrubber (Tape Slip)
-
-  * **Trigger:** Scrub amount parameter (0-1) controls intensity of random LFO.
-  * **Audio Action:** Adds jittery noise to the `index~` read pointer in tv.audio. Creates pitch warble/flutter.
-  * **Video Action:** Adds noise to the `offset_x` in jit.rota. Creates "tracking error" horizontal displacement.
-
------
-
-## VII. Module Reference
-
-### Directory Structure
+The project structure is updated to house the new effects processing in dedicated sub-patches.
 
 ```text
 Teevee_Project/
-├── teevee.amxd             (The Shell: Host device, parameters, and routing)
+├── teevee.amxd             (The Shell)
 ├── modules/
-│   ├── tv.main.maxpat      (The Router: Connects both engines)
-│   ├── tv.audio.maxpat     (PATH A: MSP audio engine)
-│   ├── tv.sync.maxpat      (The Clock: Master timing)
-│   ├── tv.ingest.maxpat    (PATH B: Audio features → Viz matrix)
-│   ├── tv.viz.maxpat       (PATH B: Display)
-│   └── tv.param.maxpat     (Dual-path parameter distribution)
+│   ├── tv.main.maxpat      (Router)
+│   ├── tv.audio.maxpat     (Path A: Core Geometry - Delay/Pitch/Shift)
+│   ├── tv.fx.maxpat        (Path A: Artifacts - Crush/Bloom/Mosaic/etc)
+│   ├── tv.ingest.maxpat    (Path B: Feature Extraction)
+│   ├── tv.viz.maxpat       (Path B: Display System)
+│   ├── tv.sync.maxpat      (Master Clock/LFOs)
+│   └── tv.param.maxpat     (Parameter Handling)
 └── code/
-    ├── tv.encode.gendsp    (Viz only: L/R → features for display)
-    └── tv.core.genjit      (Video Gen: Scroll, Warp, Smear, Edge)
+    ├── tv.core.genjit      (Video Gen: Geometry & Artifacts Shader)
+    └── tv.encode.gendsp    (Audio Feature Extraction)
 ```
 
-### Module Descriptions
+### Module Responsibilities
 
-| Module | Purpose |
-|:-------|:--------|
-| **tv.main.maxpat** | Routes audio through Path A (tv.audio → plugout~) and visual through Path B (tv.ingest → tv.viz) |
-| **tv.audio.maxpat** | Hi-Def Audio Engine - pure MSP processing with delay, varispeed, freqshift, reverb |
-| **tv.sync.maxpat** | Master clock/index generation for both paths |
-| **tv.ingest.maxpat** | Writes audio features to visualization-only matrix (---tv_viz_ram) |
-| **tv.viz.maxpat** | Display rendering |
-| **tv.param.maxpat** | Dual-path parameter distribution hub - routes controls to both engines |
+| Module | Responsibility | New Additions |
+| :--- | :--- | :--- |
+| **tv.audio** | **Geometry.** Handles the "Tape Head" logic. Buffer playback, pitch, and frequency shifting. | *Unchanged* |
+| **tv.fx** | **Artifacts.** A serial chain of MSP objects handling the degradation and color effects. | Houses Mosaic, Aberration, Bloom, Solarize, Crush, Shutter, Ghosting. |
+| **tv.viz** | **Visuals.** Manages the Jitter matrix and the Gen shader. | Now accepts 7 new parameters to pass to the shader. |
+| **tv.core.genjit** | **The Shader.** The massive GLSL kernel processing the video. | Updated with all 7 new effect algorithms. |
 
 -----
 
-## VIII. Parameter Reference
+## V. Interaction Logic (Meta-States)
 
-### Input Parameter Ranges (UI Dials: 0-1)
+These operate outside the standard signal chain, affecting the *state* of the system.
 
-All parameters arrive at `tv.param.maxpat` as normalized 0-1 values from the UI.
+### 1. FREEZE (The Datamosh)
 
-### Audio Engine Scaling (tv.audio.maxpat)
+  * **Audio:** Input Gate closes (`gate~ 0`). Buffer stops updating. Read head continues to loop the trapped snippet.
+  * **Video:** `jit.poke~` stops writing. The matrix stops updating. The visualizer renders the "stuck" frame, allowing the effects (Zoom/Rotate) to manipulate the static image.
 
-| Parameter | Input | Scaled Output | MSP Object | Notes |
-|:----------|:------|:--------------|:-----------|:------|
-| **Scroll** | 0-1 | 0-1000 ms | `scale~ 0. 1000. 0 44100` → delay offset | Maps to ~1 second max delay |
-| **Zoom** | 0-1 | 0.5-2.0× speed | `*~ 86.` → `phasor~` | 0.5 = octave down, 2.0 = octave up |
-| **Rotate** | 0-1 | -500 to +500 Hz | `freqshift~` | Bode frequency shifter |
-| **Smear** | 0-1 | 0-1 wet/dry | `*~` crossfade | 0 = dry, 1 = full reverb |
-| **Freeze** | 0/1 | 0/1 gate | `*~` gates input | Stops buffer writing when frozen |
-| **Scrub** | 0-1 | 0-500 samples jitter | `+~` on read index | Random LFO modulates delay read position |
+### 2. SCRUB (The Tape Slip)
 
-### Visual Engine Scaling (tv.core.genjit)
+  * **Audio:** Random noise added to the `index~` read pointer. Causes pitch warble and timing jitter.
+  * **Video:** Random noise added to the X-Axis offset. Causes "tracking error" horizontal shaking.
 
-| Parameter | Input | Scaled Output | Shader Param | Notes |
-|:----------|:------|:--------------|:-------------|:------|
-| **Scroll** | 0-1 | 0-1 | `scroll_speed` | Y-axis pan velocity |
-| **Zoom** | 0-1 | 0.5-2.0 | `zoom` | UV scaling (0.25-4.0 supported) |
-| **Rotate** | 0-1 | -π to +π rad | `rotation` | 2D rotation in radians |
-| **Smear** | 0-1 | 0-0.95 | `smear` | Frame feedback (capped to prevent infinite) |
-| **Edge** | 0-1 | 0-1 | `edge_amount` | Sobel edge detection mix |
-| **Warp X/Y** | 0-1 | -1 to +1 | `warp_x`, `warp_y` | Barrel/pincushion distortion |
-| **Scrub** | LFO signal | -128 to +128 | `offset_x` in jit.rota | Horizontal tracking error displacement |
+-----
 
-### Freeze Behavior
+## VI. Parameter Scaling Reference
 
-**Audio (tv.audio.maxpat):**
-- Freeze = 1: Input signal is gated (`*~ 0`), buffer stops recording
-- Delay buffer continues looping existing content
-- All other processing (zoom, rotate, smear) still applies
+All parameters are normalized (0.0 - 1.0) coming from the UI.
 
-**Visual (tv.core.genjit):**
-- Freeze stops matrix updates in tv.ingest
-- Existing frame continues to be processed with feedback effects
+| Parameter | Audio Scale | Audio Object | Video Scale | Video Logic |
+| :--- | :--- | :--- | :--- | :--- |
+| **Mosaic** | 1.0 $\to$ 0.05 SR | `degrade~` | 2048.0 $\to$ 10.0 cells | `floor(uv*cells)` |
+| **Aberration**| 0ms $\to$ 40ms | `tapout~` | 0.0 $\to$ 0.05 offset | `uv + vec2(shift,0)` |
+| **Bloom** | 1.0 $\to$ 8.0 Drive | `overdrive~` | 0.0 $\to$ 1.0 Intensity | Blur + Add |
+| **Solarize** | 0.0 $\to$ 1.0 Thresh | `pong~` | 0.0 $\to$ 1.0 Thresh | `abs(col - sol)` |
+| **Crush** | 24 $\to$ 4 Bits | `degrade~` | 255 $\to$ 2 Steps | `floor(col*steps)` |
+| **Shutter** | 0Hz $\to$ 20Hz | `phasor~` | 0Hz $\to$ 20Hz | `sin(time * Hz)` |
+| **Ghosting** | 0 $\to$ 0.8 Fdbk | `tapout~` | 0 $\to$ 0.5 Mix | Frame Buffer Mix |
 
 -----
 
@@ -249,11 +191,21 @@ These objects caused "No such object" errors:
 
 -----
 
-## Appendix II. tv.audio.maxpat Architecture
+Here is the updated technical appendix.
 
-The audio engine uses a 4-stage serial processing chain:
+**Significant Change Note:** To support the expanded architecture, the processing has been split.
 
-```
+  * **`tv.audio`** now handles *only* Geometry (Scroll/Zoom/Rotate).
+  * **`tv.fx`** is a **NEW** module handling the Artifacts and Space (Audio).
+  * **`tv.viz`** handles the Video, with most logic moved into the `jit.gen` shader for performance.
+
+-----
+
+## Appendix II. tv.audio.maxpat Architecture (Geometry Core)
+
+This module is now strictly for manipulating the time and frequency domains of the signal. It acts as the "Tape Head."
+
+```text
 Input L/R
     ↓
 ┌─────────────────────────────────────────────────────────┐
@@ -261,7 +213,7 @@ Input L/R
 │ buffer~ ---tv_delay_l/r → poke~ (write)                 │
 │ phasor~ 0.5 → scale~ → write index                      │
 │ write_idx - scroll_offset → %~ 88200 → index~ (read)    │
-│ Scroll param (0-1000ms) controls delay offset           │
+│ [Param] Scroll (0-1000ms) controls delay offset         │
 └─────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────┐
@@ -269,95 +221,151 @@ Input L/R
 │ buffer~ ---tv_pitch_l/r → poke~ (write at fixed rate)   │
 │ phasor~ 86 → scale~ → write index                       │
 │ zoom * 86 → phasor~ → scale~ → index~ (read)            │
-│ Zoom param (0.5-2.0) controls playback speed/pitch      │
+│ [Param] Zoom (0.5-2.0) controls playback speed/pitch    │
 └─────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────┐
 │ STAGE 3: FREQ SHIFT (ROTATE)                            │
-│ freqshift~ with shift amount from rotate param          │
-│ Rotate param (-500 to +500 Hz) controls shift           │
+│ freqshift~                                              │
+│ [Param] Rotate (-500 to +500 Hz) controls shift         │
 └─────────────────────────────────────────────────────────┘
     ↓
-┌─────────────────────────────────────────────────────────┐
-│ STAGE 4: REVERB (SMEAR)                                 │
-│ tapin~ 1000 → tapout~ 29 67 / 37 79 → *~ 0.4 (feedback) │
-│ Dry/wet crossfade: dry * (1-smear) + wet * smear        │
-│ Smear param (0-1) controls wet/dry mix                  │
-└─────────────────────────────────────────────────────────┘
-    ↓
-Output L/R
+Outlet L/R → To tv.fx.maxpat
 ```
 
 ### Parameter Receives
-- `r ---tv_audio_scroll` → delay offset (0-1000ms)
-- `r ---tv_audio_zoom` → playback speed (0.5-2.0)
-- `r ---tv_audio_rotate` → freq shift (-500 to +500 Hz)
-- `r ---tv_audio_smear` → reverb wet/dry (0-1)
-- `r ---tv_audio_freeze` → gate (0/1)
+
+  * `r ---tv_param_scroll` → delay offset
+  * `r ---tv_param_zoom` → playback speed
+  * `r ---tv_param_rotate` → freq shift
+  * `r ---tv_param_freeze` → gate input (stops `poke~` writing)
 
 -----
 
-## Appendix III. tv.fx.maxpat Architecture
+## Appendix III. tv.fx.maxpat Architecture (Signal Artifacts)
 
-The visualization engine uses a 5-stage processing chain:
+This is a **new serial processing chain** that applies texture, distortion, and spatial effects.
 
-```
-Bang (frame trigger from tv.sync)
+```text
+Input L/R (From tv.audio)
     ↓
 ┌─────────────────────────────────────────────────────────┐
-│ TRIGGER: t b b b b b b                                  │
-│ Bangs all parameter stores and matrix reads each frame  │
+│ STAGE 1: MOSAIC (Resample)                              │
+│ degrade~ (Audio degradation)                            │
+│ [Param] Mosaic (1.0 -> 0.05) controls sample rate       │
 └─────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────┐
-│ PARAM STORAGE (float objects)                           │
-│ r ---tv_param_scroll → float → scale 0-1 to -128..128   │
-│ r ---tv_param_zoom → float → scale 0-1 to 0.5..2.0      │
-│ r ---tv_param_rotation → float → scale 0-1 to -180..180 │
-│ r ---tv_param_smear → float (0-0.95 feedback amount)    │
-│ Values stored on receive, output on frame bang          │
+│ STAGE 2: ABERRATION (Spectral Split)                    │
+│ crossover~ (Low/Mid/High)                               │
+│ Mid: tapout~ (Param * 20ms)                             │
+│ High: tapout~ (Param * 40ms)                            │
+│ [Param] Aberration controls delay spread                │
 └─────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────┐
-│ STAGE 1: READ 1D MATRIX                                 │
-│ jit.matrix ---tv_viz_ram 4 float32 65536                │
-│ Reads audio features written by tv.ingest               │
+│ STAGE 3: BLOOM (Saturation)                             │
+│ *~ drive → tanh~ (Soft Clip) → gain comp                │
+│ [Param] Bloom (1.0 -> 8.0) controls drive               │
 └─────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────┐
-│ STAGE 2: RESHAPE TO 2D                                  │
-│ jit.matrix 4 float32 256 256 @adapt 0                   │
-│ Converts 1D buffer to 2D image for display              │
+│ STAGE 4: SOLARIZE (Foldover)                            │
+│ pong~ -1. 1. (Wavefolding)                              │
+│ [Param] Solarize controls fold threshold/gain           │
 └─────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────┐
-│ STAGE 3: TRANSFORM (jit.rota @boundmode 4)              │
-│ offset_y ← scroll (vertical pan)                        │
-│ zoom_x, zoom_y ← zoom (UV scaling)                      │
-│ theta ← rotation (2D rotation in degrees)               │
+│ STAGE 5: CRUSH (Bit Depth)                              │
+│ degrade~ (Bit quantization)                             │
+│ [Param] Crush (24 -> 4) controls bit depth              │
 └─────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────┐
-│ STAGE 4: SMEAR (feedback blend)                         │
-│ new_frame * (1 - smear) + prev_frame * smear            │
-│ jit.matrix ---tv_viz_ram_out stores previous frame      │
-│ jit.op @op * scales each, jit.op @op + combines         │
+│ STAGE 6: SHUTTER (Gating)                               │
+│ phasor~ (LFO) → >~ 0.5 (Square Wave) → *~ Signal        │
+│ [Param] Shutter (0 -> 20Hz) controls LFO rate           │
 └─────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────┐
-│ STAGE 5: COLORIZE (jit.gen)                             │
-│ ARGB planes → RGB display with boost and cross-mod      │
-│ Alpha (plane 0): amplitude × 3                          │
-│ Red (plane 1): waveform × 5 + green × 0.3               │
-│ Green (plane 2): flux × 10 (boosted, small values)      │
-│ Blue (plane 3): stereo × 5 + alpha × 0.5                │
+│ STAGE 7: GHOSTING (Slapback)                            │
+│ tapin~ → tapout~ 15ms → *~ 0.8 (Feedback)               │
+│ [Param] Ghosting controls wet/dry mix                   │
 └─────────────────────────────────────────────────────────┘
     ↓
-Outlet → tv.viz for display
+┌─────────────────────────────────────────────────────────┐
+│ STAGE 8: SMEAR (Reverb)                                 │
+│ FDN / Plate Reverb (Long decay)                         │
+│ [Param] Smear controls wet/dry mix                      │
+└─────────────────────────────────────────────────────────┘
+    ↓
+Outlet L/R → Main Output
 ```
 
 ### Parameter Receives
-- `r ---tv_param_scroll` → offset_y for jit.rota (0-1 → -128..128 pixels)
-- `r ---tv_param_zoom` → zoom_x/zoom_y for jit.rota (0-1 → 0.5..2.0)
-- `r ---tv_param_rotation` → theta for jit.rota (0-1 → -180..180 degrees)
-- `r ---tv_param_smear` → feedback blend amount (0-0.95)
+
+  * `r ---tv_param_mosaic`
+  * `r ---tv_param_aberration`
+  * `r ---tv_param_bloom`
+  * `r ---tv_param_solarize`
+  * `r ---tv_param_crush`
+  * `r ---tv_param_shutter`
+  * `r ---tv_param_ghosting`
+  * `r ---tv_param_smear`
+
+-----
+
+## Appendix IV. tv.viz.maxpat Architecture (Visual Engine)
+
+To handle the complexity of the new effects, distinct stages (like `jit.rota`) have been consolidated into a single Gen shader (`tv.core.genjit`).
+
+```text
+Bang (Frame Trigger)
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ STAGE 1: INGEST                                         │
+│ jit.matrix ---tv_viz_ram (Reads audio features)         │
+│ jit.matrix 256 256 (Reshapes to 2D texture)             │
+└─────────────────────────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ STAGE 2: PARAMETER COLLECTION                           │
+│ r ---tv_param_* objects collect all 10 FX values        │
+│ prepended as "param name value" messages                │
+└─────────────────────────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ STAGE 3: THE SHADER (tv.core.genjit)                    │
+│ This single object processes the entire chain in GPU:   │
+│                                                         │
+│ 1. Geometry: Offset(Scroll) -> Scale(Zoom) -> Rot(Rot)  │
+│ 2. Mosaic: Quantize UV coords                           │
+│ 3. Aberration: Multi-tap sample RGB                     │
+│ 4. Bloom: Blur + Threshold + Add                        │
+│ 5. Solarize: Luma Inversion                             │
+│ 6. Crush: Quantize Color Steps                          │
+│ 7. Shutter: Multiply by Black (Time LFO)                │
+│ 8. Ghosting/Smear: Mix with feedback texture            │
+└─────────────────────────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ STAGE 4: FEEDBACK LOOP                                  │
+│ Output of Gen → jit.matrix ---tv_feedback               │
+│ (This texture is fed back into Stage 3 input 2)         │
+└─────────────────────────────────────────────────────────┘
+    ↓
+Outlet → Display
+```
+
+### Shader Parameter Logic (Inside tv.core.genjit)
+
+  * **Scroll:** `offset_y`
+  * **Zoom:** `scale`
+  * **Rotate:** `theta`
+  * **Mosaic:** `cells` (mapped 2048.0 to 10.0)
+  * **Aberration:** `shift` (mapped 0.0 to 0.05)
+  * **Bloom:** `intensity` (0.0 to 1.0)
+  * **Solarize:** `threshold` (0.0 to 1.0)
+  * **Crush:** `steps` (mapped 255.0 to 2.0)
+  * **Shutter:** `freq` (0.0 to 20.0)
+  * **Ghosting/Smear:** `feedback_amt` (0.0 to 0.99)
