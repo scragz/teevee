@@ -108,6 +108,17 @@
 			},
 			{
 				"box" : {
+					"id" : "obj-recv-x",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 240.0, 30.0, 110.0, 22.0 ],
+					"text" : "receive~ tv_write_x"
+				}
+			},
+			{
+				"box" : {
 					"id" : "obj-encode",
 					"maxclass" : "newobj",
 					"numinlets" : 2,
@@ -435,7 +446,7 @@
 			{
 				"patchline" : {
 					"destination" : [ "obj-linear-index", 0 ],
-					"source" : [ "obj-in3", 0 ]
+					"source" : [ "obj-recv-x", 0 ]
 				}
 			},
 			{

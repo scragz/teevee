@@ -102,7 +102,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 600.0, 30.0, 120.0, 22.0 ],
-					"text" : "r tv_audio_scroll"
+					"text" : "r ---tv_audio_scroll"
 				}
 			},
 			{
@@ -113,7 +113,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 700.0, 30.0, 115.0, 22.0 ],
-					"text" : "r tv_audio_zoom"
+					"text" : "r ---tv_audio_zoom"
 				}
 			},
 			{
@@ -124,7 +124,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 600.0, 60.0, 120.0, 22.0 ],
-					"text" : "r tv_audio_rotate"
+					"text" : "r ---tv_audio_rotate"
 				}
 			},
 			{
@@ -135,7 +135,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 700.0, 60.0, 115.0, 22.0 ],
-					"text" : "r tv_audio_smear"
+					"text" : "r ---tv_audio_smear"
 				}
 			},
 			{
@@ -146,7 +146,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 800.0, 60.0, 120.0, 22.0 ],
-					"text" : "r tv_audio_freeze"
+					"text" : "r ---tv_audio_freeze"
 				}
 			},
 			{
@@ -638,12 +638,6 @@
 					"destination" : [ "obj-freqshift-r", 1 ],
 					"order" : 0,
 					"source" : [ "obj-rotate-scale", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-freeze-line", 0 ],
-					"source" : [ "obj-r-freeze", 0 ]
 				}
 			},
 			{

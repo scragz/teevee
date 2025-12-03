@@ -277,6 +277,16 @@
 			},
 			{
 				"box" : {
+					"id" : "obj-send-x",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 160.0, 380.0, 100.0, 22.0 ],
+					"text" : "send~ tv_write_x"
+				}
+			},
+			{
+				"box" : {
 					"id" : "obj-phasor-full",
 					"maxclass" : "newobj",
 					"numinlets" : 2,
@@ -432,6 +442,12 @@
 				"patchline" : {
 					"destination" : [ "obj-out2", 0 ],
 					"source" : [ "obj-floor-read", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-send-x", 0 ],
+					"source" : [ "obj-floor-x", 0 ]
 				}
 			}
 		]
