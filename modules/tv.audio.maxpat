@@ -287,8 +287,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 140.0, 30.0, 22.0 ],
-					"text" : "*~"
+					"patching_rect" : [ 50.0, 140.0, 40.0, 22.0 ],
+					"text" : "*~ 1."
 				}
 			},
 			{
@@ -298,8 +298,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 150.0, 140.0, 30.0, 22.0 ],
-					"text" : "*~"
+					"patching_rect" : [ 150.0, 140.0, 40.0, 22.0 ],
+					"text" : "*~ 1."
 				}
 			},
 			{
@@ -395,8 +395,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 300.0, 320.0, 60.0, 22.0 ],
-					"text" : "/~ 88200."
+					"patching_rect" : [ 300.0, 320.0, 40.0, 22.0 ],
+					"text" : "*~ 1."
 				}
 			},
 			{
@@ -514,7 +514,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 700.0, 180.0, 50.0, 22.0 ],
-					"text" : "*~ 1."
+					"text" : "*~ 0.5"
 				}
 			},
 			{
@@ -524,8 +524,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 350.0, 500.0, 125.0, 22.0 ],
-					"text" : "*~ 1."
+					"patching_rect" : [ 350.0, 500.0, 70.0, 22.0 ],
+					"text" : "*~ 88200"
 				}
 			},
 			{
@@ -663,28 +663,12 @@
 			{
 				"patchline" : {
 					"destination" : [ "obj-delay-poke-l", 0 ],
-					"order" : 1,
-					"source" : [ "obj-freeze-gate-l", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-poke-l", 0 ],
-					"order" : 0,
 					"source" : [ "obj-freeze-gate-l", 0 ]
 				}
 			},
 			{
 				"patchline" : {
 					"destination" : [ "obj-delay-poke-r", 0 ],
-					"order" : 1,
-					"source" : [ "obj-freeze-gate-r", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-poke-r", 0 ],
-					"order" : 0,
 					"source" : [ "obj-freeze-gate-r", 0 ]
 				}
 			},
@@ -709,6 +693,20 @@
 			{
 				"patchline" : {
 					"destination" : [ "obj-delay-read-idx", 0 ],
+					"source" : [ "obj-delay-write-idx", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-delay-poke-l", 1 ],
+					"order" : 1,
+					"source" : [ "obj-delay-write-idx", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-delay-poke-r", 1 ],
+					"order" : 0,
 					"source" : [ "obj-delay-write-idx", 0 ]
 				}
 			},
