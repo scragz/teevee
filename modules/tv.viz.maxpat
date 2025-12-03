@@ -711,8 +711,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 50.0, 650.0, 95.0, 22.0 ],
-					"text" : "jit.gen @gen tv.core"
+					"patching_rect" : [ 50.0, 650.0, 75.0, 22.0 ],
+					"text" : "jit.pix @file tv.core.genjit"
 				}
 			},
 			{

@@ -94,6 +94,9 @@ feedback_with_edge = mix(feedback_color, feedback_color + edge, edge_amount);
 // At smear=0: pure input, at smear=1: pure feedback
 base_output = mix(input_color, feedback_with_edge, smear);
 
+// Safety clamp to prevent runaway feedback
+base_output = clamp(base_output, -2, 2);
+
 // === EFFECT 2: ABERRATION - RGB Channel Offset ===
 // Scale: 0 (no effect) → 0.05 (maximum offset)
 // Radial falloff from center
@@ -166,10 +169,10 @@ ghosted_output = mix(base_output, (ghost_1 * 0.6 + ghost_2 * 0.4), ghosting);
 ghost_frame_2 = ghost_frame_1;
 ghost_frame_1 = feedback_frame;
 
-// Store output for next frame's feedback
-feedback_frame = ghosted_output;
+// Store output for next frame's feedback (with safety damping)
+feedback_frame = clamp(ghosted_output * 0.99, -2, 2);
 
-// Output final result
-out1 = ghosted_output;
+// Output final result (clamped to prevent overflow)
+out1 = clamp(ghosted_output, -1, 1);
 ]]></code>
 </genjit>
