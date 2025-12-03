@@ -25,13 +25,13 @@ This plan guides the refactoring of **Teevee** into the complete **Parallel Twin
 ## Phase 3: The Unified Visual Shader (`tv.core.genjit`)
 *Goal: Consolidate all visual processing into a single GPU pass.*
 
-- [ ] 13. **MOSAIC**: Add UV quantization logic (Scale: 2048 - 10 cells).
-- [ ] 14. **ABERRATION**: Add RGB channel offset with radial falloff.
-- [ ] 15. **BLOOM**: Add 4-tap Gaussian blur + thresholding.
-- [ ] 16. **SOLARIZE**: Add `abs(color - threshold)` inversion logic.
-- [ ] 17. **CRUSH**: Add color quantization with dithering.
-- [ ] 18. **SHUTTER**: Add temporal LFO masking.
-- [ ] 19. **GHOSTING**: Add frame buffer mixing (accessing frames from 2-3 frames ago).
+- [x] 13. **MOSAIC**: Add UV quantization logic (Scale: 2048 - 10 cells).
+- [x] 14. **ABERRATION**: Add RGB channel offset with radial falloff.
+- [x] 15. **BLOOM**: Add 4-tap Gaussian blur + thresholding.
+- [x] 16. **SOLARIZE**: Add `abs(color - threshold)` inversion logic.
+- [x] 17. **CRUSH**: Add color quantization with dithering.
+- [x] 18. **SHUTTER**: Add temporal LFO masking.
+- [x] 19. **GHOSTING**: Add frame buffer mixing (accessing frames from 2-3 frames ago).
 
 ## Phase 4: Update `tv.viz.maxpat`
 *Goal: Make this the container for the visual engine.*
