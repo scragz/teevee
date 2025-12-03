@@ -106,8 +106,19 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "signal" ],
-					"patching_rect" : [ 30.0, 300.0, 80.0, 22.0 ],
+					"patching_rect" : [ 30.0, 200.0, 80.0, 22.0 ],
 					"text" : "tv.audio"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-fx",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 2,
+					"outlettype" : [ "signal", "signal" ],
+					"patching_rect" : [ 30.0, 300.0, 60.0, 22.0 ],
+					"text" : "tv.fx"
 				}
 			},
 			{
@@ -133,22 +144,12 @@
 			},
 			{
 				"box" : {
-					"id" : "obj-fx",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 450.0, 350.0, 40.0, 22.0 ],
-					"text" : "tv.fx"
-				}
-			},
-			{
-				"box" : {
 					"id" : "obj-viz",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 450.0, 450.0, 45.0, 22.0 ],
+					"numoutlets" : 1,
+					"outlettype" : [ "jit_matrix" ],
+					"patching_rect" : [ 450.0, 350.0, 45.0, 22.0 ],
 					"text" : "tv.viz"
 				}
 			},
@@ -530,14 +531,26 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-plugout", 0 ],
+					"destination" : [ "obj-fx", 0 ],
 					"source" : [ "obj-audio", 0 ]
 				}
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-plugout", 1 ],
+					"destination" : [ "obj-fx", 1 ],
 					"source" : [ "obj-audio", 1 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-plugout", 0 ],
+					"source" : [ "obj-fx", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-plugout", 1 ],
+					"source" : [ "obj-fx", 1 ]
 				}
 			},
 			{
@@ -566,22 +579,14 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-fx", 0 ],
+					"destination" : [ "obj-viz", 0 ],
 					"source" : [ "obj-qmetro", 0 ]
 				}
 			},
 			{
 				"patchline" : {
 					"destination" : [ "obj-pwindow", 0 ],
-					"order" : 0,
-					"source" : [ "obj-fx", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-viz", 0 ],
-					"order" : 1,
-					"source" : [ "obj-fx", 0 ]
+					"source" : [ "obj-viz", 0 ]
 				}
 			},
 			{
