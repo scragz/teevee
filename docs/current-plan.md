@@ -6,26 +6,26 @@ This plan guides the refactoring of **Teevee** into the complete **Parallel Twin
 *Goal: Separate "Geometry" from "Artifacts" and strictly define the Audio vs. Video domains.*
 
 - [x] 1. Disconnect `tv.fx` from visual chain in `tv.main`.
-- [x] 2. Re-route audio chain: `plugin~` $\to$ `tv.audio` $\to$ `tv.fx` $\to$ `plugout~`.
-- [x] 3. Re-route visual chain: `tv.ingest` $\to$ `tv.viz`.
+- [x] 2. Re-route audio chain: `plugin~` - `tv.audio` - `tv.fx` - `plugout~`.
+- [x] 3. Re-route visual chain: `tv.ingest` - `tv.viz`.
 - [x] 4. Remove Stage 4 (Reverb/Smear) from `tv.audio.maxpat`.
 
 ## Phase 2: Build the Audio Artifacts Engine (`tv.fx.maxpat`)
 *Goal: Create a serial chain of MSP objects for texture and space.*
 
-- [ ] 5. **MOSAIC**: Implement `degrade~` for sample rate reduction (Scale: 1.0 $\to$ 0.05).
-- [ ] 6. **ABERRATION**: Implement `svf~` 3-band split (250Hz / 2kHz) with `tapout~` delays on Mid/High.
-- [ ] 7. **BLOOM**: Implement `tanh~` saturation with gain compensation (Scale: 1 $\to$ 8 drive).
-- [ ] 8. **SOLARIZE**: Implement `fold~` or `pong~` for wavefolding distortion.
-- [ ] 9. **CRUSH**: Implement `degrade~` for bit depth reduction (Scale: 24 $\to$ 4 bits).
-- [ ] 10. **SHUTTER**: Implement `phasor~` $\to$ `>~ 0.5` for square wave gating (Scale: 0 $\to$ 20Hz).
-- [ ] 11. **GHOSTING**: Implement `tapin~`/`tapout~` (15ms) with feedback (0.8) for metallic slapback.
-- [ ] 12. **SMEAR**: Move Reverb (`tapin~` 5000ms) from `tv.audio` to end of chain.
+- [x] 5. **MOSAIC**: Implement `degrade~` for sample rate reduction (Scale: 1.0 - 0.05).
+- [x] 6. **ABERRATION**: Implement `svf~` 3-band split (250Hz / 2kHz) with `tapout~` delays on Mid/High.
+- [x] 7. **BLOOM**: Implement `tanh~` saturation with gain compensation (Scale: 1 - 8 drive).
+- [x] 8. **SOLARIZE**: Implement `fold~` or `pong~` for wavefolding distortion.
+- [x] 9. **CRUSH**: Implement `degrade~` for bit depth reduction (Scale: 24 - 4 bits).
+- [x] 10. **SHUTTER**: Implement `phasor~` - `>~ 0.5` for square wave gating (Scale: 0 - 20Hz).
+- [x] 11. **GHOSTING**: Implement `tapin~`/`tapout~` (15ms) with feedback (0.8) for metallic slapback.
+- [x] 12. **SMEAR**: Move Reverb (`tapin~` 5000ms) from `tv.audio` to end of chain.
 
 ## Phase 3: The Unified Visual Shader (`tv.core.genjit`)
 *Goal: Consolidate all visual processing into a single GPU pass.*
 
-- [ ] 13. **MOSAIC**: Add UV quantization logic (Scale: 2048 $\to$ 10 cells).
+- [ ] 13. **MOSAIC**: Add UV quantization logic (Scale: 2048 - 10 cells).
 - [ ] 14. **ABERRATION**: Add RGB channel offset with radial falloff.
 - [ ] 15. **BLOOM**: Add 4-tap Gaussian blur + thresholding.
 - [ ] 16. **SOLARIZE**: Add `abs(color - threshold)` inversion logic.
@@ -43,13 +43,13 @@ This plan guides the refactoring of **Teevee** into the complete **Parallel Twin
 *Goal: Add the 7 new knobs and scaling logic.*
 
 - [ ] 22. Add 7 new parameter inlets to `tv.param.maxpat`.
-- [ ] 23. **MOSAIC Scaling**: Audio (1.0 $\to$ 0.05), Visual (2048 $\to$ 10).
-- [ ] 24. **ABERRATION Scaling**: Audio (0 $\to$ 40ms), Visual (0 $\to$ 0.05).
-- [ ] 25. **BLOOM Scaling**: Audio (1 $\to$ 8 drive), Visual (0 $\to$ 1).
-- [ ] 26. **SOLARIZE Scaling**: Audio/Visual (0 $\to$ 1 threshold).
-- [ ] 27. **CRUSH Scaling**: Audio (24 $\to$ 4 bits), Visual (255 $\to$ 2 steps).
-- [ ] 28. **SHUTTER Scaling**: Audio/Visual (0 $\to$ 20Hz).
-- [ ] 29. **GHOSTING Scaling**: Audio (0 $\to$ 0.8 fb), Visual (0 $\to$ 0.5 mix).
+- [ ] 23. **MOSAIC Scaling**: Audio (1.0 - 0.05), Visual (2048 - 10).
+- [ ] 24. **ABERRATION Scaling**: Audio (0 - 40ms), Visual (0 - 0.05).
+- [ ] 25. **BLOOM Scaling**: Audio (1 - 8 drive), Visual (0 - 1).
+- [ ] 26. **SOLARIZE Scaling**: Audio/Visual (0 - 1 threshold).
+- [ ] 27. **CRUSH Scaling**: Audio (24 - 4 bits), Visual (255 - 2 steps).
+- [ ] 28. **SHUTTER Scaling**: Audio/Visual (0 - 20Hz).
+- [ ] 29. **GHOSTING Scaling**: Audio (0 - 0.8 fb), Visual (0 - 0.5 mix).
 
 ## Testing & Optimization
 - [ ] 30. Verify effect order matches exactly in audio and visual chains.

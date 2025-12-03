@@ -191,16 +191,6 @@ These objects caused "No such object" errors:
 
 -----
 
-Here is the updated technical appendix.
-
-**Significant Change Note:** To support the expanded architecture, the processing has been split.
-
-  * **`tv.audio`** now handles *only* Geometry (Scroll/Zoom/Rotate).
-  * **`tv.fx`** is a **NEW** module handling the Artifacts and Space (Audio).
-  * **`tv.viz`** handles the Video, with most logic moved into the `jit.gen` shader for performance.
-
------
-
 ## Appendix II. tv.audio.maxpat Architecture (Geometry Core)
 
 This module is now strictly for manipulating the time and frequency domains of the signal. It acts as the "Tape Head."
