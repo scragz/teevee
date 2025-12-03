@@ -36,8 +36,8 @@ This plan guides the refactoring of **Teevee** into the complete **Parallel Twin
 ## Phase 4: Update `tv.viz.maxpat`
 *Goal: Make this the container for the visual engine.*
 
-- [ ] 20. Add parameter receives (`r ---tv_param_*`) for all 10 effects.
-- [ ] 21. Connect `jit.gen` (`tv.core.genjit`) with proper feedback routing.
+- [x] 20. Add parameter receives (`r ---tv_param_*`) for all 10 effects.
+- [x] 21. Connect `jit.gen` (`tv.core.genjit`) with proper feedback routing.
 
 ## Phase 5: Routing (`tv.param.maxpat`)
 *Goal: Add the 7 new knobs and scaling logic.*
