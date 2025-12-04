@@ -31,8 +31,8 @@
 		"enablehscroll" : 1,
 		"enablevscroll" : 1,
 		"devicewidth" : 0.0,
-		"description" : "tv.audio v7.2 - Simplified Audio Engine with tapin~/tapout~",
-		"digest" : "Pure MSP audio processing with delay, pitch, freqshift, filter",
+		"description" : "tv.audio v7.3 - Audio Engine with delay~/gizmo~/freqshift~/lores~",
+		"digest" : "Pure MSP audio processing with variable delay, pitch, freqshift, filter",
 		"tags" : "teevee, audio, dsp, delay, pitch, freqshift",
 		"style" : "",
 		"subpatcher_template" : "",
@@ -91,7 +91,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 400.0, 30.0, 400.0, 20.0 ],
-					"text" : "tv.audio v7.2 - Simplified Audio Engine with tapin~/tapout~"
+					"text" : "tv.audio v7.3 - Audio Engine with delay~/gizmo~/freqshift~/lores~"
 				}
 			},
 			{
@@ -134,51 +134,51 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 400.0, 170.0, 120.0, 22.0 ],
-					"text" : "scale~ 0. 1. 1. 1000."
+					"text" : "scale~ 0. 1. 0. 1000."
 				}
 			},
 			{
 				"box" : {
-					"id" : "obj-tapin-l",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "tapconnect" ],
-					"patching_rect" : [ 50.0, 110.0, 85.0, 22.0 ],
-					"text" : "tapin~ 2000"
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-tapin-r",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "tapconnect" ],
-					"patching_rect" : [ 150.0, 110.0, 85.0, 22.0 ],
-					"text" : "tapin~ 2000"
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-tapout-l",
+					"id" : "obj-scroll-samps-l",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 200.0, 65.0, 22.0 ],
-					"text" : "tapout~ 1"
+					"patching_rect" : [ 300.0, 170.0, 70.0, 22.0 ],
+					"text" : "mstosamps~"
 				}
 			},
 			{
 				"box" : {
-					"id" : "obj-tapout-r",
+					"id" : "obj-scroll-samps-r",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 150.0, 200.0, 65.0, 22.0 ],
-					"text" : "tapout~ 1"
+					"patching_rect" : [ 300.0, 200.0, 70.0, 22.0 ],
+					"text" : "mstosamps~"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-delay-l",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 50.0, 200.0, 95.0, 22.0 ],
+					"text" : "delay~ 44100 1"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-delay-r",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 150.0, 200.0, 95.0, 22.0 ],
+					"text" : "delay~ 44100 1"
 				}
 			},
 			{
@@ -380,13 +380,13 @@
 		"lines" : [
 			{
 				"patchline" : {
-					"destination" : [ "obj-tapin-l", 0 ],
+					"destination" : [ "obj-delay-l", 0 ],
 					"source" : [ "obj-in-l", 0 ]
 				}
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-tapin-r", 0 ],
+					"destination" : [ "obj-delay-r", 0 ],
 					"source" : [ "obj-in-r", 0 ]
 				}
 			},
@@ -404,40 +404,40 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-tapout-l", 0 ],
+					"destination" : [ "obj-scroll-samps-l", 0 ],
 					"order" : 1,
 					"source" : [ "obj-scroll-scale", 0 ]
 				}
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-tapout-r", 0 ],
+					"destination" : [ "obj-scroll-samps-r", 0 ],
 					"order" : 0,
 					"source" : [ "obj-scroll-scale", 0 ]
 				}
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-tapout-l", 0 ],
-					"source" : [ "obj-tapin-l", 0 ]
+					"destination" : [ "obj-delay-l", 1 ],
+					"source" : [ "obj-scroll-samps-l", 0 ]
 				}
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-tapout-r", 0 ],
-					"source" : [ "obj-tapin-r", 0 ]
+					"destination" : [ "obj-delay-r", 1 ],
+					"source" : [ "obj-scroll-samps-r", 0 ]
 				}
 			},
 			{
 				"patchline" : {
 					"destination" : [ "obj-gizmo-l", 0 ],
-					"source" : [ "obj-tapout-l", 0 ]
+					"source" : [ "obj-delay-l", 0 ]
 				}
 			},
 			{
 				"patchline" : {
 					"destination" : [ "obj-gizmo-r", 0 ],
-					"source" : [ "obj-tapout-r", 0 ]
+					"source" : [ "obj-delay-r", 0 ]
 				}
 			},
 			{

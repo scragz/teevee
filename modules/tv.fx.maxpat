@@ -316,7 +316,7 @@
 				"box" : {
 					"id" : "obj-aberr-tap-l",
 					"maxclass" : "newobj",
-					"numinlets" : 2,
+					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 50.0, 200.0, 65.0, 22.0 ],
@@ -327,7 +327,7 @@
 				"box" : {
 					"id" : "obj-aberr-tap-r",
 					"maxclass" : "newobj",
-					"numinlets" : 2,
+					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 150.0, 200.0, 65.0, 22.0 ],
@@ -749,26 +749,7 @@
 					"source" : [ "obj-aberr-tapin-r", 0 ]
 				}
 			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-aberr-tap-l", 1 ],
-					"order" : 1,
-					"source" : [ "obj-aberration-line", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-aberr-neg", 0 ],
-					"order" : 0,
-					"source" : [ "obj-aberration-line", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-aberr-tap-r", 1 ],
-					"source" : [ "obj-aberr-neg", 0 ]
-				}
-			},
+
 			{
 				"patchline" : {
 					"destination" : [ "obj-bloom-drive-l", 0 ],
