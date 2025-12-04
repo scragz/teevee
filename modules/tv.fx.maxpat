@@ -265,8 +265,8 @@
 					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 100.0, 70.0, 22.0 ],
-					"text" : "degrade~ 1"
+					"patching_rect" : [ 50.0, 100.0, 95.0, 22.0 ],
+					"text" : "degrade~ 1. 24"
 				}
 			},
 			{
@@ -276,8 +276,8 @@
 					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 150.0, 100.0, 70.0, 22.0 ],
-					"text" : "degrade~ 1"
+					"patching_rect" : [ 150.0, 100.0, 95.0, 22.0 ],
+					"text" : "degrade~ 1. 24"
 				}
 			},
 			{
@@ -316,22 +316,22 @@
 				"box" : {
 					"id" : "obj-aberr-tap-l",
 					"maxclass" : "newobj",
-					"numinlets" : 1,
+					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 50.0, 200.0, 65.0, 22.0 ],
-					"text" : "tapout~ 0"
+					"text" : "tapout~ 1"
 				}
 			},
 			{
 				"box" : {
 					"id" : "obj-aberr-tap-r",
 					"maxclass" : "newobj",
-					"numinlets" : 1,
+					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 150.0, 200.0, 65.0, 22.0 ],
-					"text" : "tapout~ 0"
+					"text" : "tapout~ 1"
 				}
 			},
 			{
@@ -343,6 +343,50 @@
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 250.0, 200.0, 40.0, 22.0 ],
 					"text" : "*~ -1"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-aberr-snap",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "float" ],
+					"patching_rect" : [ 520.0, 165.0, 75.0, 22.0 ],
+					"text" : "snapshot~ 50"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-aberr-metro",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "bang" ],
+					"patching_rect" : [ 600.0, 135.0, 65.0, 22.0 ],
+					"text" : "metro 50"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-aberr-loadbang",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "bang" ],
+					"patching_rect" : [ 600.0, 105.0, 58.0, 22.0 ],
+					"text" : "loadbang"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-aberr-start",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "int" ],
+					"patching_rect" : [ 600.0, 120.0, 22.0, 22.0 ],
+					"text" : "t 1"
 				}
 			},
 			{
@@ -429,6 +473,28 @@
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 300.0, 400.0, 50.0, 22.0 ],
 					"text" : "cycle~"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-solar-ringmod-l",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 50.0, 370.0, 30.0, 22.0 ],
+					"text" : "*~"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-solar-ringmod-r",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 150.0, 370.0, 30.0, 22.0 ],
+					"text" : "*~"
 				}
 			},
 			{
@@ -525,8 +591,8 @@
 					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 530.0, 75.0, 22.0 ],
-					"text" : "degrade~ 1"
+					"patching_rect" : [ 50.0, 530.0, 95.0, 22.0 ],
+					"text" : "degrade~ 1. 24"
 				}
 			},
 			{
@@ -536,8 +602,8 @@
 					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 150.0, 530.0, 75.0, 22.0 ],
-					"text" : "degrade~ 1"
+					"patching_rect" : [ 150.0, 530.0, 95.0, 22.0 ],
+					"text" : "degrade~ 1. 24"
 				}
 			},
 			{
@@ -557,8 +623,8 @@
 					"numinlets" : 6,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 300.0, 570.0, 110.0, 22.0 ],
-					"text" : "scale~ 0. 20. 1. 30."
+					"patching_rect" : [ 300.0, 570.0, 115.0, 22.0 ],
+					"text" : "scale~ 0. 20. 0.1 30."
 				}
 			},
 			{
@@ -861,6 +927,44 @@
 
 			{
 				"patchline" : {
+					"destination" : [ "obj-aberr-snap", 0 ],
+					"source" : [ "obj-aberration-line", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-aberr-start", 0 ],
+					"source" : [ "obj-aberr-loadbang", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-aberr-metro", 0 ],
+					"source" : [ "obj-aberr-start", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-aberr-snap", 1 ],
+					"source" : [ "obj-aberr-metro", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-aberr-tap-l", 1 ],
+					"order" : 1,
+					"source" : [ "obj-aberr-snap", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-aberr-tap-r", 1 ],
+					"order" : 0,
+					"source" : [ "obj-aberr-snap", 0 ]
+				}
+			},
+			{
+				"patchline" : {
 					"destination" : [ "obj-bloom-drive-l", 0 ],
 					"source" : [ "obj-aberr-tap-l", 0 ]
 				}
@@ -899,7 +1003,7 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-solar-wet-l", 0 ],
+					"destination" : [ "obj-solar-ringmod-l", 0 ],
 					"order" : 1,
 					"source" : [ "obj-bloom-sat-l", 0 ]
 				}
@@ -913,7 +1017,7 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-solar-wet-r", 0 ],
+					"destination" : [ "obj-solar-ringmod-r", 0 ],
 					"order" : 1,
 					"source" : [ "obj-bloom-sat-r", 0 ]
 				}
@@ -928,7 +1032,6 @@
 			{
 				"patchline" : {
 					"destination" : [ "obj-solar-freq", 0 ],
-					"order" : 0,
 					"source" : [ "obj-solarize-line", 0 ]
 				}
 			},
@@ -941,22 +1044,48 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-solar-osc", 0 ],
-					"source" : [ "obj-solar-freq", 0 ]
-				}
-			},
-			{
-				"patchline" : {
 					"destination" : [ "obj-solar-wet-l", 1 ],
-					"order" : 1,
-					"source" : [ "obj-solar-osc", 0 ]
+					"order" : 2,
+					"source" : [ "obj-solarize-line", 0 ]
 				}
 			},
 			{
 				"patchline" : {
 					"destination" : [ "obj-solar-wet-r", 1 ],
 					"order" : 0,
+					"source" : [ "obj-solarize-line", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-solar-osc", 0 ],
+					"source" : [ "obj-solar-freq", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-solar-ringmod-l", 1 ],
+					"order" : 1,
 					"source" : [ "obj-solar-osc", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-solar-ringmod-r", 1 ],
+					"order" : 0,
+					"source" : [ "obj-solar-osc", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-solar-wet-l", 0 ],
+					"source" : [ "obj-solar-ringmod-l", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-solar-wet-r", 0 ],
+					"source" : [ "obj-solar-ringmod-r", 0 ]
 				}
 			},
 			{

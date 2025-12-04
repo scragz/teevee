@@ -31,8 +31,8 @@
 		"enablehscroll" : 1,
 		"enablevscroll" : 1,
 		"devicewidth" : 0.0,
-		"description" : "tv.audio v10 - Geometry audio effects with freeze (scroll/zoom/rotate/smear)",
-		"digest" : "Delay (scroll), varispeed (zoom), freq shift (rotate), lowpass (smear), freeze gate",
+		"description" : "tv.audio v12 - Geometry audio effects with groove~ varispeed",
+		"digest" : "Delay (scroll), varispeed (zoom via groove~), freq shift (rotate), lowpass (smear)",
 		"tags" : "teevee, audio, geometry, freeze",
 		"style" : "",
 		"subpatcher_template" : "",
@@ -69,7 +69,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 300.0, 30.0, 450.0, 20.0 ],
-					"text" : "tv.audio v10 - Geometry Effects with Freeze Gate"
+					"text" : "tv.audio v11 - Geometry Effects (Varispeed Bypassed)"
 				}
 			},
 			{
@@ -237,6 +237,17 @@
 			},
 			{
 				"box" : {
+					"id" : "obj-scroll-snap",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "float" ],
+					"patching_rect" : [ 300.0, 135.0, 75.0, 22.0 ],
+					"text" : "snapshot~ 50"
+				}
+			},
+			{
+				"box" : {
 					"id" : "obj-scroll-tapin-l",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
@@ -318,8 +329,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "float", "bang" ],
-					"patching_rect" : [ 450.0, 350.0, 160.0, 22.0 ],
-					"text" : "buffer~ ---tv_zoom_l 500 1"
+					"patching_rect" : [ 450.0, 170.0, 150.0, 22.0 ],
+					"text" : "buffer~ ---tv_zoom_l 500"
 				}
 			},
 			{
@@ -329,107 +340,74 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "float", "bang" ],
-					"patching_rect" : [ 450.0, 380.0, 160.0, 22.0 ],
-					"text" : "buffer~ ---tv_zoom_r 500 1"
+					"patching_rect" : [ 450.0, 200.0, 150.0, 22.0 ],
+					"text" : "buffer~ ---tv_zoom_r 500"
 				}
 			},
 			{
 				"box" : {
-					"id" : "obj-zoom-phasor",
+					"id" : "obj-zoom-record-l",
 					"maxclass" : "newobj",
-					"numinlets" : 2,
+					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 450.0, 410.0, 70.0, 22.0 ],
-					"text" : "phasor~ 2"
+					"patching_rect" : [ 50.0, 200.0, 115.0, 22.0 ],
+					"text" : "record~ ---tv_zoom_l"
 				}
 			},
 			{
 				"box" : {
-					"id" : "obj-zoom-rate-mul",
+					"id" : "obj-zoom-record-r",
 					"maxclass" : "newobj",
-					"numinlets" : 2,
+					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 450.0, 440.0, 45.0, 22.0 ],
-					"text" : "*~ 2"
+					"patching_rect" : [ 150.0, 200.0, 115.0, 22.0 ],
+					"text" : "record~ ---tv_zoom_r"
 				}
 			},
 			{
 				"box" : {
-					"id" : "obj-zoom-scale",
-					"maxclass" : "newobj",
-					"numinlets" : 6,
-					"numoutlets" : 1,
-					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 450.0, 470.0, 120.0, 22.0 ],
-					"text" : "scale~ 0. 1. 0. 500."
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-freeze-gate-l",
-					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 200.0, 30.0, 22.0 ],
-					"text" : "*~"
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-freeze-gate-r",
-					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 150.0, 200.0, 30.0, 22.0 ],
-					"text" : "*~"
-				}
-			},
-			{
-				"box" : {
-					"id" : "obj-zoom-write-l",
+					"id" : "obj-zoom-groove-l",
 					"maxclass" : "newobj",
 					"numinlets" : 3,
-					"numoutlets" : 1,
-					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 240.0, 110.0, 22.0 ],
-					"text" : "poke~ ---tv_zoom_l"
+					"numoutlets" : 2,
+					"outlettype" : [ "signal", "signal" ],
+					"patching_rect" : [ 50.0, 240.0, 115.0, 22.0 ],
+					"text" : "groove~ ---tv_zoom_l"
 				}
 			},
 			{
 				"box" : {
-					"id" : "obj-zoom-write-r",
+					"id" : "obj-zoom-groove-r",
 					"maxclass" : "newobj",
 					"numinlets" : 3,
-					"numoutlets" : 1,
-					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 150.0, 240.0, 110.0, 22.0 ],
-					"text" : "poke~ ---tv_zoom_r"
+					"numoutlets" : 2,
+					"outlettype" : [ "signal", "signal" ],
+					"patching_rect" : [ 150.0, 240.0, 115.0, 22.0 ],
+					"text" : "groove~ ---tv_zoom_r"
 				}
 			},
 			{
 				"box" : {
-					"id" : "obj-zoom-read-l",
+					"id" : "obj-zoom-loop",
 					"maxclass" : "newobj",
-					"numinlets" : 3,
+					"numinlets" : 1,
 					"numoutlets" : 1,
-					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 280.0, 110.0, 22.0 ],
-					"text" : "index~ ---tv_zoom_l"
+					"outlettype" : [ "int" ],
+					"patching_rect" : [ 300.0, 220.0, 57.0, 22.0 ],
+					"text" : "loadbang"
 				}
 			},
 			{
 				"box" : {
-					"id" : "obj-zoom-read-r",
-					"maxclass" : "newobj",
-					"numinlets" : 3,
+					"id" : "obj-zoom-loopmsg",
+					"maxclass" : "message",
+					"numinlets" : 2,
 					"numoutlets" : 1,
-					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 150.0, 280.0, 110.0, 22.0 ],
-					"text" : "index~ ---tv_zoom_r"
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 300.0, 245.0, 35.0, 22.0 ],
+					"text" : "loop 1"
 				}
 			},
 			{
@@ -684,6 +662,26 @@
 			},
 			{
 				"patchline" : {
+					"destination" : [ "obj-scroll-snap", 0 ],
+					"source" : [ "obj-scroll-line", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-scroll-tap-l", 0 ],
+					"order" : 1,
+					"source" : [ "obj-scroll-snap", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-scroll-tap-r", 0 ],
+					"order" : 0,
+					"source" : [ "obj-scroll-snap", 0 ]
+				}
+			},
+			{
+				"patchline" : {
 					"destination" : [ "obj-scroll-tap-l", 0 ],
 					"source" : [ "obj-scroll-tapin-l", 0 ]
 				}
@@ -696,90 +694,67 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-freeze-gate-l", 0 ],
+					"destination" : [ "obj-zoom-record-l", 0 ],
 					"source" : [ "obj-scroll-tap-l", 0 ]
 				}
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-freeze-gate-r", 0 ],
+					"destination" : [ "obj-zoom-record-r", 0 ],
 					"source" : [ "obj-scroll-tap-r", 0 ]
 				}
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-zoom-write-l", 0 ],
-					"source" : [ "obj-freeze-gate-l", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-zoom-write-r", 0 ],
-					"source" : [ "obj-freeze-gate-r", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-zoom-line", 0 ],
-					"source" : [ "obj-r-zoom", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-zoom-rate-mul", 1 ],
+					"destination" : [ "obj-zoom-groove-l", 0 ],
+					"order" : 1,
 					"source" : [ "obj-zoom-line", 0 ]
 				}
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-zoom-rate-mul", 0 ],
-					"source" : [ "obj-zoom-phasor", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-zoom-scale", 0 ],
-					"source" : [ "obj-zoom-rate-mul", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-zoom-write-l", 1 ],
-					"order" : 1,
-					"source" : [ "obj-zoom-scale", 0 ]
-				}
-			},
-			{
-				"patchline" : {
-					"destination" : [ "obj-zoom-write-r", 1 ],
+					"destination" : [ "obj-zoom-groove-r", 0 ],
 					"order" : 0,
-					"source" : [ "obj-zoom-scale", 0 ]
+					"source" : [ "obj-zoom-line", 0 ]
 				}
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-zoom-read-l", 0 ],
+					"destination" : [ "obj-zoom-loopmsg", 0 ],
+					"source" : [ "obj-zoom-loop", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-zoom-groove-l", 0 ],
 					"order" : 1,
-					"source" : [ "obj-zoom-scale", 0 ]
+					"source" : [ "obj-zoom-loopmsg", 0 ]
 				}
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-zoom-read-r", 0 ],
+					"destination" : [ "obj-zoom-groove-r", 0 ],
 					"order" : 0,
-					"source" : [ "obj-zoom-scale", 0 ]
+					"source" : [ "obj-zoom-loopmsg", 0 ]
 				}
 			},
 			{
 				"patchline" : {
 					"destination" : [ "obj-freqshift-l", 0 ],
-					"source" : [ "obj-zoom-read-l", 0 ]
+					"source" : [ "obj-zoom-groove-l", 0 ]
 				}
 			},
 			{
 				"patchline" : {
 					"destination" : [ "obj-freqshift-r", 0 ],
-					"source" : [ "obj-zoom-read-r", 0 ]
+					"source" : [ "obj-zoom-groove-r", 0 ]
+				}
+			},
+
+			{
+				"patchline" : {
+					"destination" : [ "obj-zoom-line", 0 ],
+					"source" : [ "obj-r-zoom", 0 ]
 				}
 			},
 			{
