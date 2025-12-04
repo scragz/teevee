@@ -9,7 +9,7 @@
 			"modernui" : 1
 		},
 		"classnamespace" : "box",
-		"rect" : [ 100.0, 100.0, 900.0, 600.0 ],
+		"rect" : [ 100.0, 100.0, 900.0, 700.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -31,9 +31,9 @@
 		"enablehscroll" : 1,
 		"enablevscroll" : 1,
 		"devicewidth" : 0.0,
-		"description" : "tv.audio v9 - Geometry audio effects (scroll/zoom/rotate/smear)",
-		"digest" : "Delay (scroll), varispeed (zoom), freq shift (rotate), lowpass (smear)",
-		"tags" : "teevee, audio, geometry",
+		"description" : "tv.audio v10 - Geometry audio effects with freeze (scroll/zoom/rotate/smear)",
+		"digest" : "Delay (scroll), varispeed (zoom), freq shift (rotate), lowpass (smear), freeze gate",
+		"tags" : "teevee, audio, geometry, freeze",
 		"style" : "",
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
@@ -69,7 +69,138 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 300.0, 30.0, 450.0, 20.0 ],
-					"text" : "tv.audio v9 - Geometry Effects (scroll/zoom/rotate/smear)"
+					"text" : "tv.audio v10 - Geometry Effects with Freeze Gate"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-section-freeze",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 500.0, 70.0, 350.0, 20.0 ],
+					"text" : "FREEZE GATE: Phasor-based write control (0=live, 1=frozen)"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-r-freeze",
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 500.0, 100.0, 120.0, 22.0 ],
+					"text" : "r ---tv_audio_freeze"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-freeze-line",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 2,
+					"outlettype" : [ "signal", "bang" ],
+					"patching_rect" : [ 500.0, 130.0, 55.0, 22.0 ],
+					"text" : "line~ 0 20"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-freeze-check",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 500.0, 160.0, 50.0, 22.0 ],
+					"text" : "<~ 0.01"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-freeze-freq",
+					"maxclass" : "newobj",
+					"numinlets" : 6,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 600.0, 160.0, 120.0, 22.0 ],
+					"text" : "scale~ 0.01 0.99 20. 0.5"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-freeze-phasor",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 600.0, 190.0, 60.0, 22.0 ],
+					"text" : "phasor~ 1"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-freeze-window",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 600.0, 220.0, 50.0, 22.0 ],
+					"text" : "<~ 0.1"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-freeze-full",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 700.0, 160.0, 60.0, 22.0 ],
+					"text" : ">=~ 0.99"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-freeze-notfull",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 700.0, 190.0, 45.0, 22.0 ],
+					"text" : "!-~ 1."
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-freeze-stutter",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 600.0, 250.0, 30.0, 22.0 ],
+					"text" : "*~"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-freeze-addlive",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 500.0, 280.0, 30.0, 22.0 ],
+					"text" : "+~"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-freeze-clip",
+					"maxclass" : "newobj",
+					"numinlets" : 3,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 500.0, 310.0, 70.0, 22.0 ],
+					"text" : "clip~ 0. 1."
 				}
 			},
 			{
@@ -154,8 +285,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 170.0, 300.0, 20.0 ],
-					"text" : "ZOOM: Varispeed via groove~ (receives 0.5-2.0)"
+					"patching_rect" : [ 50.0, 170.0, 350.0, 20.0 ],
+					"text" : "ZOOM: Varispeed with freeze-gated write (receives 0.5-2.0)"
 				}
 			},
 			{
@@ -187,7 +318,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "float", "bang" ],
-					"patching_rect" : [ 450.0, 170.0, 160.0, 22.0 ],
+					"patching_rect" : [ 450.0, 350.0, 160.0, 22.0 ],
 					"text" : "buffer~ ---tv_zoom_l 500 1"
 				}
 			},
@@ -198,7 +329,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "float", "bang" ],
-					"patching_rect" : [ 450.0, 200.0, 160.0, 22.0 ],
+					"patching_rect" : [ 450.0, 380.0, 160.0, 22.0 ],
 					"text" : "buffer~ ---tv_zoom_r 500 1"
 				}
 			},
@@ -209,7 +340,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 450.0, 240.0, 70.0, 22.0 ],
+					"patching_rect" : [ 450.0, 410.0, 70.0, 22.0 ],
 					"text" : "phasor~ 2"
 				}
 			},
@@ -220,7 +351,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 450.0, 270.0, 45.0, 22.0 ],
+					"patching_rect" : [ 450.0, 440.0, 45.0, 22.0 ],
 					"text" : "*~ 2"
 				}
 			},
@@ -231,8 +362,30 @@
 					"numinlets" : 6,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 450.0, 300.0, 120.0, 22.0 ],
+					"patching_rect" : [ 450.0, 470.0, 120.0, 22.0 ],
 					"text" : "scale~ 0. 1. 0. 500."
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-freeze-gate-l",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 50.0, 200.0, 30.0, 22.0 ],
+					"text" : "*~"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-freeze-gate-r",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 150.0, 200.0, 30.0, 22.0 ],
+					"text" : "*~"
 				}
 			},
 			{
@@ -242,7 +395,7 @@
 					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 200.0, 110.0, 22.0 ],
+					"patching_rect" : [ 50.0, 240.0, 110.0, 22.0 ],
 					"text" : "poke~ ---tv_zoom_l"
 				}
 			},
@@ -253,7 +406,7 @@
 					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 150.0, 200.0, 110.0, 22.0 ],
+					"patching_rect" : [ 150.0, 240.0, 110.0, 22.0 ],
 					"text" : "poke~ ---tv_zoom_r"
 				}
 			},
@@ -264,7 +417,7 @@
 					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 240.0, 110.0, 22.0 ],
+					"patching_rect" : [ 50.0, 280.0, 110.0, 22.0 ],
 					"text" : "index~ ---tv_zoom_l"
 				}
 			},
@@ -275,7 +428,7 @@
 					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 150.0, 240.0, 110.0, 22.0 ],
+					"patching_rect" : [ 150.0, 280.0, 110.0, 22.0 ],
 					"text" : "index~ ---tv_zoom_r"
 				}
 			},
@@ -285,7 +438,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 290.0, 300.0, 20.0 ],
+					"patching_rect" : [ 50.0, 330.0, 300.0, 20.0 ],
 					"text" : "ROTATE: Freq shift (receives -500 to 500 Hz)"
 				}
 			},
@@ -296,7 +449,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 300.0, 290.0, 120.0, 22.0 ],
+					"patching_rect" : [ 300.0, 330.0, 120.0, 22.0 ],
 					"text" : "r ---tv_audio_rotate"
 				}
 			},
@@ -307,7 +460,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "bang" ],
-					"patching_rect" : [ 300.0, 320.0, 55.0, 22.0 ],
+					"patching_rect" : [ 300.0, 360.0, 55.0, 22.0 ],
 					"text" : "line~ 0 20"
 				}
 			},
@@ -318,7 +471,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "signal" ],
-					"patching_rect" : [ 50.0, 350.0, 70.0, 22.0 ],
+					"patching_rect" : [ 50.0, 390.0, 70.0, 22.0 ],
 					"text" : "freqshift~ 0"
 				}
 			},
@@ -329,7 +482,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "signal" ],
-					"patching_rect" : [ 150.0, 350.0, 70.0, 22.0 ],
+					"patching_rect" : [ 150.0, 390.0, 70.0, 22.0 ],
 					"text" : "freqshift~ 0"
 				}
 			},
@@ -339,7 +492,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 390.0, 250.0, 20.0 ],
+					"patching_rect" : [ 50.0, 430.0, 250.0, 20.0 ],
 					"text" : "SMEAR: Lowpass filter (receives 0-1)"
 				}
 			},
@@ -350,7 +503,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 300.0, 390.0, 115.0, 22.0 ],
+					"patching_rect" : [ 300.0, 430.0, 115.0, 22.0 ],
 					"text" : "r ---tv_audio_smear"
 				}
 			},
@@ -361,7 +514,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "bang" ],
-					"patching_rect" : [ 300.0, 420.0, 55.0, 22.0 ],
+					"patching_rect" : [ 300.0, 460.0, 55.0, 22.0 ],
 					"text" : "line~ 0 20"
 				}
 			},
@@ -372,7 +525,7 @@
 					"numinlets" : 6,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 300.0, 450.0, 140.0, 22.0 ],
+					"patching_rect" : [ 300.0, 490.0, 140.0, 22.0 ],
 					"text" : "scale~ 0. 1. 20000. 200."
 				}
 			},
@@ -383,7 +536,7 @@
 					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 450.0, 95.0, 22.0 ],
+					"patching_rect" : [ 50.0, 490.0, 95.0, 22.0 ],
 					"text" : "lores~ 20000 0.5"
 				}
 			},
@@ -394,7 +547,7 @@
 					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 150.0, 450.0, 95.0, 22.0 ],
+					"patching_rect" : [ 150.0, 490.0, 95.0, 22.0 ],
 					"text" : "lores~ 20000 0.5"
 				}
 			},
@@ -406,7 +559,7 @@
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 510.0, 30.0, 30.0 ]
+					"patching_rect" : [ 50.0, 550.0, 30.0, 30.0 ]
 				}
 			},
 			{
@@ -417,7 +570,7 @@
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 150.0, 510.0, 30.0, 30.0 ]
+					"patching_rect" : [ 150.0, 550.0, 30.0, 30.0 ]
 				}
 			}
 		],
@@ -432,6 +585,95 @@
 				"patchline" : {
 					"destination" : [ "obj-scroll-tapin-r", 0 ],
 					"source" : [ "obj-in-r", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-line", 0 ],
+					"source" : [ "obj-r-freeze", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-check", 0 ],
+					"order" : 2,
+					"source" : [ "obj-freeze-line", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-freq", 0 ],
+					"order" : 1,
+					"source" : [ "obj-freeze-line", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-full", 0 ],
+					"order" : 0,
+					"source" : [ "obj-freeze-line", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-addlive", 0 ],
+					"source" : [ "obj-freeze-check", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-phasor", 0 ],
+					"source" : [ "obj-freeze-freq", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-window", 0 ],
+					"source" : [ "obj-freeze-phasor", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-stutter", 0 ],
+					"source" : [ "obj-freeze-window", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-notfull", 0 ],
+					"source" : [ "obj-freeze-full", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-stutter", 1 ],
+					"source" : [ "obj-freeze-notfull", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-addlive", 1 ],
+					"source" : [ "obj-freeze-stutter", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-clip", 0 ],
+					"source" : [ "obj-freeze-addlive", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-gate-l", 1 ],
+					"order" : 1,
+					"source" : [ "obj-freeze-clip", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-freeze-gate-r", 1 ],
+					"order" : 0,
+					"source" : [ "obj-freeze-clip", 0 ]
 				}
 			},
 			{
@@ -454,14 +696,26 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-zoom-write-l", 0 ],
+					"destination" : [ "obj-freeze-gate-l", 0 ],
 					"source" : [ "obj-scroll-tap-l", 0 ]
 				}
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-zoom-write-r", 0 ],
+					"destination" : [ "obj-freeze-gate-r", 0 ],
 					"source" : [ "obj-scroll-tap-r", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-zoom-write-l", 0 ],
+					"source" : [ "obj-freeze-gate-l", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-zoom-write-r", 0 ],
+					"source" : [ "obj-freeze-gate-r", 0 ]
 				}
 			},
 			{

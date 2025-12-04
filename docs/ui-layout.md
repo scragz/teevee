@@ -32,31 +32,25 @@ This document describes the updated UI layout for the Teevee M4L device with all
 9. **SHUTTER** - Strobe / Tremolo (0-1)
 10. **GHOSTING** - Double Vision / Slapback (0-1)
 11. **SMEAR** - Frame Feedback / Reverb (0-1)
-
-### CONTROL: STATE
-*System-level controls*
-
 12. **FREEZE** - Buffer Loop / Datamosh (toggle: 0/1)
 
 ## Recommended M4L Panel Layout
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│  TEEVEE v8 - Parallel Twin Engine                               │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  [GEOMETRY]        [TEXTURE]                  [SPACE]    [STATE]│
-│                                                                  │
-│    SCROLL           MOSAIC      BLOOM         SHUTTER           │
-│      ◉               ◉           ◉              ◉       FREEZE  │
-│                                                           [ ]    │
-│    ZOOM          ABERRATION   SOLARIZE       GHOSTING           │
+┌────────────────────────────────────────────────────────────────┐
+│  TEEVEE v8 - Parallel Twin Engine                              │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│    SCROLL           MOSAIC      BLOOM         SHUTTER          │
 │      ◉               ◉           ◉              ◉              │
-│                                                                  │
-│    ROTATE           CRUSH                      SMEAR            │
-│      ◉               ◉                          ◉              │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
+│                                                                │
+│    ZOOM          ABERRATION   SOLARIZE       GHOSTING          │
+│      ◉               ◉           ◉              ◉              │
+│                                                                │
+│    ROTATE           CRUSH      FREEZE           SMEAR          │
+│      ◉               ◉           ◉              ◉              │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
 ```
 
 ## UI Element Specifications

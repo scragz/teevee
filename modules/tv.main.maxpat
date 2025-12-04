@@ -570,21 +570,23 @@
 			{
 				"box" : {
 					"id" : "obj-dial-freeze",
-					"maxclass" : "live.toggle",
+					"maxclass" : "live.dial",
 					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
+					"numoutlets" : 2,
+					"outlettype" : [ "", "float" ],
 					"parameter_enable" : 1,
-					"patching_rect" : [ 1250.0, 100.0, 30.0, 30.0 ],
+					"patching_rect" : [ 1250.0, 100.0, 40.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 269.0, 141.0, 30.0, 20.0 ],
+					"presentation_rect" : [ 264.0, 121.0, 40.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Freeze",
 							"parameter_shortname" : "Freeze",
-							"parameter_type" : 2,
+							"parameter_type" : 0,
+							"parameter_unitstyle" : 1,
+							"parameter_mmin" : 0.0,
 							"parameter_mmax" : 1.0,
-							"parameter_initial" : [ 0 ],
+							"parameter_initial" : [ 0.0 ],
 							"parameter_initial_enable" : 1
 						}
 					},

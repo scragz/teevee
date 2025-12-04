@@ -232,7 +232,7 @@
 			},
 			{
 				"box" : {
-					"comment" : "Freeze (0/1) - State",
+					"comment" : "Freeze (0-1) - State",
 					"id" : "obj-in-freeze",
 					"index" : 12,
 					"maxclass" : "inlet",

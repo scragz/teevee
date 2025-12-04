@@ -640,13 +640,111 @@
 			},
 			{
 				"box" : {
+					"id" : "obj-label-ghosting",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 50.0, 720.0, 220.0, 20.0 ],
+					"text" : "Stage 7: Ghosting (slapback delay)"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-ghost-tapin-l",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "tapconnect" ],
+					"patching_rect" : [ 50.0, 750.0, 70.0, 22.0 ],
+					"text" : "tapin~ 50"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-ghost-tapin-r",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "tapconnect" ],
+					"patching_rect" : [ 150.0, 750.0, 70.0, 22.0 ],
+					"text" : "tapin~ 50"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-ghost-tap-l",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 50.0, 780.0, 70.0, 22.0 ],
+					"text" : "tapout~ 20"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-ghost-tap-r",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 150.0, 780.0, 70.0, 22.0 ],
+					"text" : "tapout~ 20"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-ghost-fb-l",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 50.0, 810.0, 30.0, 22.0 ],
+					"text" : "*~"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-ghost-fb-r",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 150.0, 810.0, 30.0, 22.0 ],
+					"text" : "*~"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-ghost-mix-l",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 50.0, 840.0, 30.0, 22.0 ],
+					"text" : "+~"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-ghost-mix-r",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 150.0, 840.0, 30.0, 22.0 ],
+					"text" : "+~"
+				}
+			},
+			{
+				"box" : {
 					"comment" : "Audio Out L",
 					"id" : "obj-out-l",
 					"index" : 1,
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 740.0, 30.0, 30.0 ]
+					"patching_rect" : [ 50.0, 890.0, 30.0, 30.0 ]
 				}
 			},
 			{
@@ -657,7 +755,7 @@
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 150.0, 740.0, 30.0, 30.0 ]
+					"patching_rect" : [ 150.0, 890.0, 30.0, 30.0 ]
 				}
 			}
 		],
@@ -997,14 +1095,92 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-out-l", 0 ],
+					"destination" : [ "obj-ghost-tapin-l", 0 ],
+					"order" : 1,
 					"source" : [ "obj-shutter-l", 0 ]
 				}
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-out-r", 0 ],
+					"destination" : [ "obj-ghost-mix-l", 0 ],
+					"order" : 0,
+					"source" : [ "obj-shutter-l", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-ghost-tapin-r", 0 ],
+					"order" : 1,
 					"source" : [ "obj-shutter-r", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-ghost-mix-r", 0 ],
+					"order" : 0,
+					"source" : [ "obj-shutter-r", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-ghost-tap-l", 0 ],
+					"source" : [ "obj-ghost-tapin-l", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-ghost-tap-r", 0 ],
+					"source" : [ "obj-ghost-tapin-r", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-ghost-fb-l", 0 ],
+					"source" : [ "obj-ghost-tap-l", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-ghost-fb-r", 0 ],
+					"source" : [ "obj-ghost-tap-r", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-ghost-fb-l", 1 ],
+					"order" : 1,
+					"source" : [ "obj-ghosting-line", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-ghost-fb-r", 1 ],
+					"order" : 0,
+					"source" : [ "obj-ghosting-line", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-ghost-mix-l", 1 ],
+					"source" : [ "obj-ghost-fb-l", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-ghost-mix-r", 1 ],
+					"source" : [ "obj-ghost-fb-r", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-out-l", 0 ],
+					"source" : [ "obj-ghost-mix-l", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-out-r", 0 ],
+					"source" : [ "obj-ghost-mix-r", 0 ]
 				}
 			}
 		]
