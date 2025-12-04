@@ -34,7 +34,17 @@ Teevee is an audio effect for Max for Live inspired by video processing techniqu
 | :--- | :--- | :--- | :--- |
 | **SHUTTER** | **Strobe** (Frame Gating) | **Tremolo** (Amplitude Gating) | A rhythmic mechanical chopping of the stream. |
 | **GHOSTING** | **Double Vision** (Lag) | **Slapback** (Short Delay) | A distinct "shadow" of the signal following it. |
-| **SMEAR** | **Frame Feedback** (Blur) | **Reverb** (Decay) | The refusal of the signal to die. Infinite tails. |
+| **SMEAR** | **Frame Feedback** (Blur) | **Lowpass Filter** (High-Freq Decay) | The refusal of the signal to die. Muffled tails. |
+
+### D. Meta-States
+
+*Affecting the overall state of the system.*
+
+| Parameter | Visual Metaphor (GPU) | Audio Mechanism (MSP) | The Shared Experience |
+| :--- | :--- | :--- | :--- |
+| **FREEZE** | **Frame Hold** (Datamosh) | **Buffer Gate** (Stutter/Hold) | Time itself stops. The moment is trapped. |
+
+**FREEZE** is a continuous control (0-1): at 0 audio passes through normally; between 0-1 it creates rhythmic stutter effects; at 1 the buffer is completely frozen, looping the captured moment indefinitely while other effects (Zoom, Rotate) continue to manipulate it.
 
 ## Architecture
 

@@ -143,14 +143,45 @@ Teevee_Project/
 
 These operate outside the standard signal chain, affecting the *state* of the system.
 
-### 1. FREEZE (The Datamosh)
+### 1. FREEZE (The Datamosh) - Continuous Control
 
-  * **Audio:** Input Gate closes (`gate~ 0`). Buffer stops updating. Read head continues to loop the trapped snippet.
+Freeze is implemented as a **continuous parameter** (0-1) rather than a binary switch, enabling a range of glitch effects:
+
+| Freeze Value | Audio Behavior | Visual Metaphor |
+| :--- | :--- | :--- |
+| **0.0** | Live pass-through, buffer constantly updates | Normal video playback |
+| **0.01 - 0.5** | Slow stutter (0.5-10 Hz gate), mostly live | Occasional frame drops |
+| **0.5 - 0.99** | Fast stutter (10-20 Hz gate), mostly frozen | Heavy frame repeat/glitch |
+| **1.0** | Full freeze, buffer stops updating entirely | Frozen frame (datamosh) |
+
+**Implementation Details:**
+
+```text
+Freeze (0-1)
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ Three-way logic:                                        │
+│                                                         │
+│ 1. Live Check: freeze <~ 0.01 → outputs 1 when live     │
+│                                                         │
+│ 2. Stutter Gate:                                        │
+│    freeze → scale~ 0.01 0.99 20. 0.5 → phasor~ Hz       │
+│    phasor~ → <~ 0.1 → 10% duty cycle write window       │
+│    (Higher freeze = faster phasor = shorter writes)     │
+│                                                         │
+│ 3. Full Freeze Check: freeze >=~ 0.99 → !-~ 1.          │
+│    When fully frozen, disable stutter gate entirely     │
+│                                                         │
+│ Final: live_check + (stutter * not_full_freeze)         │
+│        → clip~ 0. 1. → write enable signal              │
+└─────────────────────────────────────────────────────────┘
+```
+
   * **Video:** `jit.poke~` stops writing. The matrix stops updating. The visualizer renders the "stuck" frame, allowing the effects (Zoom/Rotate) to manipulate the static image.
 
-### 2. SCRUB (The Tape Slip)
+### 2. SCRUB (The Tape Slip) - Not Yet Implemented
 
-  * **Audio:** Random noise added to the `index~` read pointer. Causes pitch warble and timing jitter.
+  * **Audio:** Random noise added to read pointer. Causes pitch warble and timing jitter.
   * **Video:** Random noise added to the X-Axis offset. Causes "tracking error" horizontal shaking.
 
 -----
@@ -175,118 +206,180 @@ All parameters are normalized (0.0 - 1.0) coming from the UI.
 
 ### Objects NOT Available in M4L
 These objects caused "No such object" errors:
-- `gigaverb~` - Use tapin~/tapout~ instead
-- `freeverb~` - Use tapin~/tapout~ instead
-- `vdelay~` - Use buffer~/poke~/index~ circular buffer instead
+- `gigaverb~` - Use tapin~/tapout~ or lores~ instead
+- `freeverb~` - Use tapin~/tapout~ or lores~ instead
+- `vdelay~` - Use buffer~/record~/groove~ or tapin~/tapout~ instead
 - `wrap~` - Use `%~` (modulo) instead
 - `yafr2` - Has internal `clip` objects that don't understand signals
+- `pong~` - Use alternative wavefolding or ring modulation
 
 ### Objects Confirmed Working in M4L
-- `buffer~`, `poke~`, `index~` - Circular buffer operations
-- `tapin~`, `tapout~` - Fixed delay lines (message-rate delay time)
+- `buffer~`, `record~`, `groove~` - Varispeed buffer playback
+- `buffer~`, `poke~`, `index~` - Circular buffer operations (use carefully)
+- `tapin~`, `tapout~` - Fixed delay lines (message-rate delay time via inlet 1)
+- `snapshot~` - Convert signal to message (requires metro/bang to trigger)
 - `phasor~`, `scale~`, `-~`, `+~`, `*~`, `!-~`, `%~` - Basic DSP math
 - `freqshift~` - Bode frequency shifter
+- `lores~` - Resonant lowpass filter
+- `degrade~` - Sample rate and bit depth reduction
+- `tanh~` - Soft saturation/clipping
+- `cycle~` - Sine oscillator
+- `rect~` - Rectangle/square wave oscillator
 - `line~` - Signal interpolation
+- `selector~` - Signal switching
+- `clip~` - Signal range limiting
 - `r`, `s` - Receive/send with `---` prefix for M4L scoping
+- `loadbang`, `metro` - Timing and initialization
+
+### Critical Implementation Notes
+
+1. **tapout~ Delay Time**: Must be message-rate, not signal. Use `snapshot~` with `metro` trigger to convert `line~` output to messages.
+
+2. **groove~ vs poke~/index~**: For varispeed playback, `groove~` is more reliable than manual `poke~/index~` which can cause read/write collisions.
+
+3. **snapshot~ Triggering**: Requires explicit bang input (inlet 1). Use `loadbang → t 1 → metro` pattern for continuous triggering.
+
+4. **selector~ for Bypass**: Use `selector~ 2 1` with `sig~ 1` on input 1 for clean effect bypass without clicks.
 
 -----
 
 ## Appendix II. tv.audio.maxpat Architecture (Geometry Core)
 
-This module is now strictly for manipulating the time and frequency domains of the signal. It acts as the "Tape Head."
+This module manipulates the time and frequency domains of the signal. It acts as the "Tape Head" with integrated freeze/stutter control.
 
 ```text
 Input L/R
     ↓
 ┌─────────────────────────────────────────────────────────┐
 │ STAGE 1: DELAY (SCROLL)                                 │
-│ buffer~ ---tv_delay_l/r → poke~ (write)                 │
-│ phasor~ 0.5 → scale~ → write index                      │
-│ write_idx - scroll_offset → %~ 88200 → index~ (read)    │
+│ tapin~ 1100 → tapout~ (message-rate delay time)         │
+│ line~ → snapshot~ 50 → delay time in ms                 │
 │ [Param] Scroll (0-1000ms) controls delay offset         │
+│ NOTE: tapout~ requires message-rate input, not signal   │
 └─────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────┐
 │ STAGE 2: VARISPEED (ZOOM)                               │
-│ buffer~ ---tv_pitch_l/r → poke~ (write at fixed rate)   │
-│ phasor~ 86 → scale~ → write index                       │
-│ zoom * 86 → phasor~ → scale~ → index~ (read)            │
-│ [Param] Zoom (0.5-2.0) controls playback speed/pitch    │
+│ buffer~ ---tv_zoom_l/r 500ms                            │
+│ record~ continuously writes to buffer                   │
+│ groove~ reads at variable speed (loop 1 on loadbang)    │
+│ [Param] Zoom (0.5-2.0) → groove~ speed inlet            │
+│ NOTE: groove~ handles interpolation automatically       │
 └─────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────┐
 │ STAGE 3: FREQ SHIFT (ROTATE)                            │
-│ freqshift~                                              │
+│ freqshift~ (Bode frequency shifter)                     │
 │ [Param] Rotate (-500 to +500 Hz) controls shift         │
+└─────────────────────────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ STAGE 4: LOWPASS FILTER (SMEAR)                         │
+│ lores~ 20000 0.5 (resonant lowpass)                     │
+│ scale~ 0. 1. 20000. 200. → cutoff frequency             │
+│ [Param] Smear (0-1) → filter cutoff (20kHz→200Hz)       │
+│ NOTE: Simple lowpass instead of full FDN reverb         │
 └─────────────────────────────────────────────────────────┘
     ↓
 Outlet L/R → To tv.fx.maxpat
 ```
 
+### Freeze/Stutter Control
+
+The Freeze parameter creates a continuum from live audio to fully frozen buffer:
+
+```text
+Freeze (0-1)
+    ↓
+┌─────────────────────────────────────────────────────────┐
+│ FREEZE GATE: Phasor-based write control                 │
+│                                                         │
+│ freeze = 0:    Live pass-through (gate always open)     │
+│ freeze 0→0.99: Stutter effect (phasor LFO gates write)  │
+│                - Higher = faster stutter, less writing  │
+│                - scale~ 0.01 0.99 20. 0.5 → phasor~ Hz  │
+│                - phasor~ → <~ 0.1 → write gate (10% duty)│
+│ freeze = 1:    Full freeze (gate always closed)         │
+│                                                         │
+│ Logic: (freeze < 0.01) + (stutter_gate * (freeze < 0.99))│
+│        Combines live check with stutter for smooth blend│
+└─────────────────────────────────────────────────────────┘
+```
+
 ### Parameter Receives
 
-  * `r ---tv_param_scroll` → delay offset
-  * `r ---tv_param_zoom` → playback speed
-  * `r ---tv_param_rotate` → freq shift
-  * `r ---tv_param_freeze` → gate input (stops `poke~` writing)
+  * `r ---tv_audio_scroll` → delay offset (0-1000ms)
+  * `r ---tv_audio_zoom` → playback speed (0.5-2.0)
+  * `r ---tv_audio_rotate` → freq shift (-500 to +500 Hz)
+  * `r ---tv_audio_smear` → lowpass cutoff (0-1 normalized)
+  * `r ---tv_audio_freeze` → freeze/stutter amount (0-1)
 
 -----
 
 ## Appendix III. tv.fx.maxpat Architecture (Signal Artifacts)
 
-This is a **new serial processing chain** that applies texture, distortion, and spatial effects.
+This is a **serial processing chain** that applies texture, distortion, and spatial effects.
 
 ```text
 Input L/R (From tv.audio)
     ↓
 ┌─────────────────────────────────────────────────────────┐
 │ STAGE 1: MOSAIC (Resample)                              │
-│ degrade~ (Audio degradation)                            │
-│ [Param] Mosaic (1.0 -> 0.05) controls sample rate       │
+│ degrade~ 1. 24 (Audio degradation)                      │
+│ [Param] Mosaic (1.0 -> 0.05) controls sample rate ratio │
+│ Default 1.0 = no effect, 0.05 = heavy aliasing          │
 └─────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────┐
-│ STAGE 2: ABERRATION (Spectral Split)                    │
-│ crossover~ (Low/Mid/High)                               │
-│ Mid: tapout~ (Param * 20ms)                             │
-│ High: tapout~ (Param * 40ms)                            │
-│ [Param] Aberration controls delay spread                │
+│ STAGE 2: ABERRATION (Delay Spread)                      │
+│ tapin~ 100 → tapout~ (2 inlets: signal + delay time)    │
+│ line~ → snapshot~ 50 (metro-triggered) → delay time msg │
+│ loadbang → t 1 → metro 50 (triggers snapshot~)          │
+│ [Param] Aberration (0-40ms) controls delay offset       │
+│ NOTE: tapout~ inlet 0 = tapin connection                │
+│       tapout~ inlet 1 = delay time message              │
 └─────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────┐
 │ STAGE 3: BLOOM (Saturation)                             │
-│ *~ drive → tanh~ (Soft Clip) → gain comp                │
-│ [Param] Bloom (1.0 -> 8.0) controls drive               │
+│ *~ drive → tanh~ (Soft Clip)                            │
+│ [Param] Bloom (1.0 -> 8.0) controls drive amount        │
+│ Drive of 1.0 = unity gain, minimal saturation           │
 └─────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────┐
-│ STAGE 4: SOLARIZE (Foldover)                            │
-│ pong~ -1. 1. (Wavefolding)                              │
-│ [Param] Solarize controls fold threshold/gain           │
+│ STAGE 4: SOLARIZE (Ring Modulation)                     │
+│ cycle~ (sine oscillator) → *~ signal (ring mod)         │
+│ scale~ 0. 1. 50. 2000. → carrier frequency              │
+│ Wet/dry crossfade: wet*param + dry*(1-param)            │
+│ [Param] Solarize (0-1) controls wet/dry + carrier freq  │
+│ NOTE: Using ring mod instead of pong~ for M4L compat    │
 └─────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────┐
 │ STAGE 5: CRUSH (Bit Depth)                              │
-│ degrade~ (Bit quantization)                             │
-│ [Param] Crush (24 -> 4) controls bit depth              │
+│ degrade~ 1. 24 (Bit quantization)                       │
+│ [Param] Crush (24 -> 4 bits) controls bit depth         │
+│ 24-bit = transparent, 4-bit = harsh quantization        │
 └─────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────┐
-│ STAGE 6: SHUTTER (Gating)                               │
-│ phasor~ (LFO) → >~ 0.5 (Square Wave) → *~ Signal        │
-│ [Param] Shutter (0 -> 20Hz) controls LFO rate           │
+│ STAGE 6: SHUTTER (Gating/Tremolo)                       │
+│ rect~ (square wave LFO) for hard gating                 │
+│ scale~ 0. 20. 0.1 30. → LFO rate (0.1Hz bypass trick)   │
+│ >=~ 0.01 → +~ 1 → selector~ 2 1 (bypass when param=0)   │
+│ sig~ 1 on selector input 1 for bypass                   │
+│ [Param] Shutter (0 -> 20Hz) controls tremolo rate       │
+│ NOTE: At param=0, selector outputs constant 1 (bypass)  │
 └─────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────┐
 │ STAGE 7: GHOSTING (Slapback)                            │
-│ tapin~ → tapout~ 15ms → *~ 0.8 (Feedback)               │
-│ [Param] Ghosting controls wet/dry mix                   │
-└─────────────────────────────────────────────────────────┘
-    ↓
-┌─────────────────────────────────────────────────────────┐
-│ STAGE 8: SMEAR (Reverb)                                 │
-│ FDN / Plate Reverb (Long decay)                         │
-│ [Param] Smear controls wet/dry mix                      │
+│ tapin~ 50 → tapout~ 20 (fixed 20ms delay)               │
+│ delayed * param → wet signal                            │
+│ dry + wet → output                                      │
+│ [Param] Ghosting (0-1) controls wet mix amount          │
+│ NOTE: No feedback - simple slapback echo                │
 └─────────────────────────────────────────────────────────┘
     ↓
 Outlet L/R → Main Output
@@ -294,14 +387,19 @@ Outlet L/R → Main Output
 
 ### Parameter Receives
 
-  * `r ---tv_param_mosaic`
-  * `r ---tv_param_aberration`
-  * `r ---tv_param_bloom`
-  * `r ---tv_param_solarize`
-  * `r ---tv_param_crush`
-  * `r ---tv_param_shutter`
-  * `r ---tv_param_ghosting`
-  * `r ---tv_param_smear`
+  * `r ---tv_audio_mosaic` → sample rate ratio (1.0 → 0.05)
+  * `r ---tv_audio_aberration` → delay spread (0 → 40ms)
+  * `r ---tv_audio_bloom` → drive amount (1.0 → 8.0)
+  * `r ---tv_audio_solarize` → ring mod wet/dry (0 → 1)
+  * `r ---tv_audio_crush` → bit depth (24 → 4 bits)
+  * `r ---tv_audio_shutter` → tremolo rate (0 → 20Hz)
+  * `r ---tv_audio_ghosting` → slapback mix (0 → 1)
+
+### Notes on M4L Compatibility
+
+  * **Solarize**: Uses ring modulation (`cycle~` × signal) instead of `pong~` wavefolding
+  * **Smear**: Handled in tv.audio.maxpat as lowpass filter instead of reverb (gigaverb~/freeverb~ unavailable)
+  * **Aberration**: Simplified to single delay spread instead of multiband crossover
 
 -----
 
