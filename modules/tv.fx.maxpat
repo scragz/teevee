@@ -319,8 +319,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 50.0, 200.0, 55.0, 22.0 ],
-					"text" : "tapout~"
+					"patching_rect" : [ 50.0, 200.0, 65.0, 22.0 ],
+					"text" : "tapout~ 0"
 				}
 			},
 			{
@@ -330,8 +330,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 150.0, 200.0, 55.0, 22.0 ],
-					"text" : "tapout~"
+					"patching_rect" : [ 150.0, 200.0, 65.0, 22.0 ],
+					"text" : "tapout~ 0"
 				}
 			},
 			{
