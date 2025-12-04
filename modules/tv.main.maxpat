@@ -222,21 +222,7 @@
 					"text" : "t 1"
 				}
 			},
-			{
-				"box" : {
-					"id" : "obj-label-geometry",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 700.0, 60.0, 100.0, 20.0 ],
-					"presentation" : 1,
-					"presentation_rect" : [ 170.0, 0.0, 68.0, 20.0 ],
-					"text" : "GEOMETRY",
-					"textcolor" : [ 0.8, 0.8, 0.8, 1.0 ],
-					"fontface" : 1,
-					"fontsize" : 10.0
-				}
-			},
+
 			{
 				"box" : {
 					"id" : "obj-dial-scroll",
@@ -247,7 +233,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 700.0, 100.0, 40.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 170.0, 15.0, 40.0, 48.0 ],
+					"presentation_rect" : [ 170.0, 7.0, 40.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Scroll",
@@ -273,7 +259,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 750.0, 100.0, 40.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 170.0, 68.0, 40.0, 48.0 ],
+					"presentation_rect" : [ 170.0, 60.0, 40.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Zoom",
@@ -299,7 +285,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 800.0, 100.0, 40.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 170.0, 121.0, 40.0, 48.0 ],
+					"presentation_rect" : [ 170.0, 113.0, 40.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Rotate",
@@ -315,21 +301,7 @@
 					"varname" : "rotate"
 				}
 			},
-			{
-				"box" : {
-					"id" : "obj-label-texture",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 850.0, 60.0, 100.0, 20.0 ],
-					"presentation" : 1,
-					"presentation_rect" : [ 217.0, 0.0, 60.0, 20.0 ],
-					"text" : "TEXTURE",
-					"textcolor" : [ 0.8, 0.8, 0.8, 1.0 ],
-					"fontface" : 1,
-					"fontsize" : 10.0
-				}
-			},
+
 			{
 				"box" : {
 					"id" : "obj-dial-mosaic",
@@ -340,7 +312,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 850.0, 100.0, 40.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 217.0, 15.0, 40.0, 48.0 ],
+					"presentation_rect" : [ 217.0, 7.0, 40.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Mosaic",
@@ -366,7 +338,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 900.0, 100.0, 40.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 264.0, 15.0, 40.0, 48.0 ],
+					"presentation_rect" : [ 264.0, 7.0, 40.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Aberration",
@@ -392,7 +364,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 950.0, 100.0, 40.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 217.0, 68.0, 40.0, 48.0 ],
+					"presentation_rect" : [ 217.0, 60.0, 40.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Bloom",
@@ -418,7 +390,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 1000.0, 100.0, 40.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 264.0, 68.0, 40.0, 48.0 ],
+					"presentation_rect" : [ 264.0, 60.0, 40.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Solarize",
@@ -444,7 +416,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 1050.0, 100.0, 40.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 217.0, 121.0, 40.0, 48.0 ],
+					"presentation_rect" : [ 217.0, 113.0, 40.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Crush",
@@ -460,21 +432,7 @@
 					"varname" : "crush"
 				}
 			},
-			{
-				"box" : {
-					"id" : "obj-label-space",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 1100.0, 60.0, 100.0, 20.0 ],
-					"presentation" : 1,
-					"presentation_rect" : [ 311.0, 0.0, 45.0, 20.0 ],
-					"text" : "SPACE",
-					"textcolor" : [ 0.8, 0.8, 0.8, 1.0 ],
-					"fontface" : 1,
-					"fontsize" : 10.0
-				}
-			},
+
 			{
 				"box" : {
 					"id" : "obj-dial-shutter",
@@ -485,7 +443,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 1100.0, 100.0, 40.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 311.0, 15.0, 40.0, 48.0 ],
+					"presentation_rect" : [ 311.0, 7.0, 40.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Shutter",
@@ -511,7 +469,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 1150.0, 100.0, 40.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 311.0, 68.0, 40.0, 48.0 ],
+					"presentation_rect" : [ 311.0, 60.0, 40.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Ghosting",
@@ -537,7 +495,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 1200.0, 100.0, 40.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 311.0, 121.0, 40.0, 48.0 ],
+					"presentation_rect" : [ 311.0, 113.0, 40.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Smear",
@@ -553,20 +511,7 @@
 					"varname" : "smear"
 				}
 			},
-			{
-				"box" : {
-					"id" : "obj-label-freeze",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 1250.0, 60.0, 50.0, 20.0 ],
-					"presentation" : 1,
-					"presentation_rect" : [ 264.0, 121.0, 40.0, 20.0 ],
-					"text" : "Freeze",
-					"textcolor" : [ 0.8, 0.8, 0.8, 1.0 ],
-					"fontsize" : 9.0
-				}
-			},
+
 			{
 				"box" : {
 					"id" : "obj-dial-freeze",
@@ -577,7 +522,7 @@
 					"parameter_enable" : 1,
 					"patching_rect" : [ 1250.0, 100.0, 40.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 264.0, 121.0, 40.0, 48.0 ],
+					"presentation_rect" : [ 264.0, 113.0, 40.0, 48.0 ],
 					"saved_attribute_attributes" : {
 						"valueof" : {
 							"parameter_longname" : "Freeze",
