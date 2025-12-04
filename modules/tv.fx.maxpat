@@ -579,8 +579,19 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 300.0, 630.0, 45.0, 22.0 ],
-					"text" : "<~ 0.01"
+					"patching_rect" : [ 300.0, 630.0, 50.0, 22.0 ],
+					"text" : ">=~ 0.01"
+				}
+			},
+			{
+				"box" : {
+					"id" : "obj-shutter-addone",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 300.0, 655.0, 40.0, 22.0 ],
+					"text" : "+~ 1"
 				}
 			},
 			{
@@ -590,7 +601,7 @@
 					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 300.0, 660.0, 80.0, 22.0 ],
+					"patching_rect" : [ 300.0, 685.0, 80.0, 22.0 ],
 					"text" : "selector~ 2 1"
 				}
 			},
@@ -954,8 +965,14 @@
 			},
 			{
 				"patchline" : {
-					"destination" : [ "obj-shutter-sel", 0 ],
+					"destination" : [ "obj-shutter-addone", 0 ],
 					"source" : [ "obj-shutter-bypass", 0 ]
+				}
+			},
+			{
+				"patchline" : {
+					"destination" : [ "obj-shutter-sel", 0 ],
+					"source" : [ "obj-shutter-addone", 0 ]
 				}
 			},
 			{
